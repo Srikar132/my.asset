@@ -7,7 +7,6 @@ import { TextPlugin } from 'gsap/TextPlugin';
 import Navbar from './Navbar';
 import LeftBrace from './LeftBrace';
 import RightBrace from './RightBrace';
-import Creative3DText from './Creative3DText';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // Register TextPlugin
 gsap.registerPlugin(TextPlugin);
