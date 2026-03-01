@@ -162,12 +162,11 @@ export default function HeroSection() {
                             {/* Initially hidden content - animates in while settling */}
                             <div
                                 ref={descriptionLinesRef}
-                                className='text-white font-thin px-2 space-y-0.5 '
+                                className='text-white/70 font-thin px-4 space-y-1 text-[0.7rem] tracking-wide'
                             >
-                                <p className='opacity-0 whitespace-nowrap'>I'm Srikar, a passionate software</p>
-                                <p className='opacity-0 whitespace-nowrap'>developer specializing in crafting</p>
-                                <p className='opacity-0 whitespace-nowrap'>immersive web experiences. With a</p>
-                                <p className='opacity-0 whitespace-nowrap'>strong foundation in JavaScript.</p>
+                                <p className='opacity-0'>Full-stack developer &</p>
+                                <p className='opacity-0'>creative web experience builder</p>
+                                <p className='opacity-0'>based in India 🇮🇳</p>
                             </div>
                         </div>
 
