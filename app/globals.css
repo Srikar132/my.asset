@@ -6,6 +6,7 @@
   --foreground: #ededed;
 
 
+  --primary : #6366f1;
 
   /* Borders - Dark */
   --border: #27272a;
@@ -58,3 +59,8 @@ body {
   box-shadow: var(--glow-purple);
 }
 
+@layer utilities {
+  .common-padding {
+    @apply px-4 py-5;
+  }
+}

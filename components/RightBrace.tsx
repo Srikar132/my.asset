@@ -4,20 +4,11 @@ interface RightBraceProps {
   color?: string;
   viewBox?: string;
 }
-
-export default function RightBrace({ 
-  className = "h-full w-auto text-white",
-  strokeWidth = 1,
-  color = "currentColor",
-  viewBox = "0 0 50 100"
-}: RightBraceProps) {
+function RightBrace({ pathRef }: { pathRef?: React.Ref<SVGPathElement> }) {
   return (
-    <svg
-      className={className}
-      viewBox={viewBox}
-      fill="none"
-    >
+    <svg className="h-full w-auto text-white" viewBox="0 0 50 100" fill="none">
       <path
+        ref={pathRef}
         d="M 10 10 
            C 20 10, 25 10, 28 15
            C 28 20, 28 35, 28 42
@@ -25,8 +16,8 @@ export default function RightBrace({
            C 30 52, 28 54, 28 58
            C 28 65, 28 80, 28 85
            C 25 90, 20 90, 10 90"
-        stroke={color}
-        strokeWidth={strokeWidth}
+        stroke="currentColor"
+        strokeWidth={2}
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -35,3 +26,4 @@ export default function RightBrace({
   );
 }
 
+export default RightBrace;

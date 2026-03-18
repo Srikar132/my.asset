@@ -11,9 +11,12 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(({ className = "" }, ref) =>
   return (
     <nav
       ref={ref}
-      className={` w-full z-50 px-8 py-6 ${className}`}
+      className={` w-full z-50 ${className}`}
+      style={{
+        visibility : "hidden"
+      }}
     >
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="flex justify-between items-center px-5 lg:px-7.5 xl:px-10 py-5 ">
         <div className="font-bold tracking-wider whitespace-nowrap">|| Srikar ||</div>
         <div className="lg:flex hidden text-xs">
           <Button href='#about'>

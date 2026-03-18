@@ -4,20 +4,11 @@ interface LeftBraceProps {
   color?: string;
   viewBox?: string;
 }
-
-export default function LeftBrace({ 
-  className = "h-full w-auto text-white",
-  strokeWidth = 1,
-  color = "currentColor",
-  viewBox = "0 0 50 100"
-}: LeftBraceProps) {
+function LeftBrace({ pathRef }: { pathRef?: React.Ref<SVGPathElement> }) {
   return (
-    <svg
-      className={className}
-      viewBox={viewBox}
-      fill="none"
-    >
+    <svg className="h-full w-auto text-white" viewBox="0 0 50 100" fill="none">
       <path
+        ref={pathRef}
         d="M 40 10 
            C 30 10, 25 10, 22 15
            C 22 20, 22 35, 22 42
@@ -25,8 +16,8 @@ export default function LeftBrace({
            C 20 52, 22 54, 22 58
            C 22 65, 22 80, 22 85
            C 25 90, 30 90, 40 90"
-        stroke={color}
-        strokeWidth={strokeWidth}
+        stroke="currentColor"
+        strokeWidth={2}
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -35,3 +26,4 @@ export default function LeftBrace({
   );
 }
 
+export default LeftBrace;

@@ -39,9 +39,7 @@ export default function Button({
         style={{ transitionDuration }}
       >
         <LeftBrace
-          className={braceClassName}
-          strokeWidth={braceStrokeWidth}
-          color={braceColor}
+
         />
       </div>
 
@@ -54,9 +52,6 @@ export default function Button({
         style={{ transitionDuration }}
       >
         <RightBrace
-          className={braceClassName}
-          strokeWidth={braceStrokeWidth}
-          color={braceColor}
         />
       </div>
     </>

@@ -3,177 +3,190 @@
 import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { TextPlugin } from 'gsap/TextPlugin';
 import Navbar from './Navbar';
 import LeftBrace from './LeftBrace';
 import RightBrace from './RightBrace';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {disablePageScroll , enablePageScroll} from "@fluejs/noscroll"
+import { DrawSVGPlugin  , TextPlugin , ScrollTrigger} from 'gsap/all';
+// import { enable } from "fuejs"
 // Register TextPlugin
-gsap.registerPlugin(TextPlugin);
-gsap.registerPlugin(ScrollTrigger);
+
+gsap.registerPlugin(TextPlugin , ScrollTrigger , DrawSVGPlugin);
 
 export default function HeroSection() {
-
-    // References to DOM elements we'll animate
-    const loadingBoxRef = useRef<HTMLDivElement>(null);
-    const nameRef = useRef<HTMLHeadingElement>(null);
-    const navbarRef = useRef<HTMLDivElement>(null);
-    const renderingTextRef = useRef<HTMLHeadingElement>(null);
-    const descriptionLinesRef = useRef<HTMLDivElement>(null);
-    const imgRef = useRef<HTMLImageElement>(null);
-
-    useGSAP(() => {
-        // Create a GSAP timeline for sequenced animations
-        const tl = gsap.timeline();
-
-
-        tl.fromTo(
-            loadingBoxRef.current,
-            {
-                opacity: 0.5,
-                scale: 0.5
-            },
-            {
-                duration: 1.5,
-                opacity: 1,
-                ease: 'power3.inOut'
-            }
-        );
-
-        // STEP 2: Wait 2 seconds (the loading phase)
-        tl.to({}, { duration: 1 });
-
-        // STEP 3: Move box upward to final position
-        tl.to(loadingBoxRef.current, {
-            y: -110,
-            duration: 1.5,
-            scale: 1,
-            ease: 'power3.inOut'
-        });
-
-        // STEP 3.5: Animate text changes while box is settling using TextPlugin
-        // Smoothly change "Rendering.." to "Hello!" character by character
-        tl.to(renderingTextRef.current, {
-            y: 0,
-            ease: 'power3.inOut',
-            duration: 0.8,
-            fontSize: '0.8rem',
-            scrub: true
-        }, '-=1.2')
-
-        tl.to(renderingTextRef.current, {
-            duration: 0.8,
-            text: {
-                value: "Hello!",
-                delimiter: "" // Character by character
-            },
-            ease: 'none'
-        }, '-=1.2'); // Start during the box movement
-
-        // Fade in the description text line by line with stagger
-        tl.fromTo(
-            descriptionLinesRef.current?.children || [],
-            {
-                opacity: 0,
-                y: 20
-            },
-            {
-                opacity: 0.8,
-                y: 0,
-                duration: 0.6,
-                ease: 'power2.out',
-                stagger: 0.15 // 0.15 second delay between each line
-            },
-            '-=0.4' // Overlap with text animation
-        );
-
-        // STEP 4: Fade in your name (starts slightly before box finishes moving)
-        tl.fromTo(
-            nameRef.current,
-            {
-                opacity: 0,
-                y: 30 // Start 30px below
-            },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power2.out'
-            },
-            '-=0.4' // Start 0.4s before previous animation ends (overlap)
-        );
-
-        // STEP 5: Slide down navbar
-        tl.fromTo(
-            navbarRef.current,
-            {
-                y: -100, // Start above viewport
-                opacity: 0
-            },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                ease: 'power2.out'
-            },
-            '-=0.8' // Overlap with name animation
-        );
-
-        // Cleanup function
-        return () => {
-            tl.kill(); // Stop animation if component unmounts
-        };
-    }, []);
-
-
-
-    return (
-        <div className="relative h-screen overflow-hidden p-5">
-
-            {/* NAVBAR */}
-            <Navbar
-                ref={navbarRef}
-            />
-
-            {/* HERO CONTENT */}
-            <div className="flex flex-col items-center justify-center h-[80vh]">
-
-                {/* LOADING BOX - Changes position based on loading state */}
-                <div
-                    ref={loadingBoxRef}
-                    className="relative scale-50"
-                >
-                    <div className="backdrop-blur-md h-40 max-w-sm rounded-2xl  shadow-2xl flex items-center ">
-
-                        {/* LEFT CURLY BRACE - SMOOTHER */}
-                        <LeftBrace />
-
-                        {/* CONTENT */}
-                        <div className="space-y-2 text-xs flex-1 py-3 h-full flex flex-col justify-center  items-center text-center ">
-                            {/* Changes from Rendering to Hello with fade */}
-                            <h1
-                                ref={renderingTextRef}
-                                className='tracking-wide translate-y-10 text-xl '
-                            >
-                                Rendering..
-                            </h1>
-
-                            {/* Initially hidden content - animates in while settling */}
-                            <div
-                                ref={descriptionLinesRef}
-                                className='text-white/70 font-thin px-4 space-y-1 text-[0.7rem] tracking-wide'
-                            >
-                                <p className='opacity-0'>Full-stack developer &</p>
-                                <p className='opacity-0'>creative web experience builder</p>
-                                <p className='opacity-0'>based in India 🇮🇳</p>
-                            </div>
-                        </div>
-
-                        <RightBrace />
-
-                    </div>
-                </div>
-            </div>
-        </div>
+  const loadingBoxRef = useRef<HTMLDivElement>(null);
+//   const nameRef = useRef<HTMLHeadingElement>(null);
+  const navbarRef = useRef<HTMLDivElement>(null);
+  const renderingTextRef = useRef<HTMLHeadingElement>(null);
+  const descriptionLinesRef = useRef<HTMLDivElement>(null);
+ 
+  // Refs for the SVG paths so DrawSVGPlugin can animate them
+  const leftBracePathRef = useRef<SVGPathElement>(null);
+  const rightBracePathRef = useRef<SVGPathElement>(null);
+ 
+  // Ref for the shimmer overlay element
+ 
+  useGSAP(() => {
+    const tl = gsap.timeline();
+ 
+    disablePageScroll();
+ 
+    // ── STEP 0: Hide braces at start so DrawSVG can reveal them ──────────────
+    gsap.set([leftBracePathRef.current, rightBracePathRef.current], {
+      drawSVG: "0%",
+    });
+ 
+    // ── STEP 1: Box fades / scales in ────────────────────────────────────────
+    tl.fromTo(
+      loadingBoxRef.current,
+      { opacity: 0, scale: 0.6 },
+      { opacity: 1, scale: 0.5, duration: 0.6, ease: 'power3.out' }
     );
+ 
+    // ── STEP 2: Braces draw themselves open simultaneously ───────────────────
+    //    Left draws top→bottom, right draws bottom→top — feels like two hands
+    //    opening outward
+    tl.to(
+      leftBracePathRef.current,
+      { drawSVG: "0% 100%", duration: 0.9, ease: 'power2.inOut' },
+      '-=0.1'
+    );
+    tl.to(
+      rightBracePathRef.current,
+      { drawSVG: "100% 0%", duration: 0.9, ease: 'power2.inOut' },
+      '<' // same time as left brace
+    );
+ 
+    // ── STEP 3: "Rendering.." text fades up into view ────────────────────────
+    tl.fromTo(
+      renderingTextRef.current,
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+      '-=0.3'
+    );
+ 
+    // ── STEP 4: Brief loading pause ──────────────────────────────────────────
+    tl.to({}, { duration: 0.9 });
+ 
+    // ── STEP 5: Box moves up to final position ───────────────────────────────
+    tl.to(loadingBoxRef.current, {
+      y: -110,
+      scale: 1,
+      duration: 1.2,
+      ease: 'power3.inOut',
+    });
+ 
+    // ── STEP 6: "Rendering.." → "Hello!" text swap + shrink ──────────────────
+    tl.to(
+      renderingTextRef.current,
+      { fontSize: '0.8rem', duration: 0.5, ease: 'power2.inOut' },
+      '-=1.0'
+    );
+    tl.to(
+      renderingTextRef.current,
+      {
+        duration: 0.6,
+        text: { value: 'Hello!', delimiter: '' },
+        ease: 'none',
+      },
+      '-=0.9'
+    );
+ 
+    // ── STEP 7: Description lines stagger in ─────────────────────────────────
+    tl.fromTo(
+      descriptionLinesRef.current?.children || [],
+      { opacity: 0, y: 10 },
+      {
+        opacity: 0.8,
+        y: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+        stagger: 0.12,
+      },
+      '-=0.3'
+    );
+ 
+
+ 
+    // ── STEP 9: Name wipes in via clip-path ───────────────────────────────────
+    // tl.fromTo(
+    //   nameRef.current,
+    //   { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
+    //   {
+    //     clipPath: 'inset(0 0% 0 0)',
+    //     opacity: 1,
+    //     duration: 0.7,
+    //     ease: 'power2.out',
+    //   },
+    //   '-=0.2'
+    // );
+ 
+    // ── STEP 10: Navbar slides down ──────────────────────────────────────────
+    navbarRef.current!.style.visibility = 'visible';
+    tl.fromTo(
+      navbarRef.current,
+      { y: -100, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: 'power2.out',
+        onComplete: () => enablePageScroll(),
+      },
+      '-=0.4'
+    );
+ 
+    return () => {
+      tl.kill();
+      enablePageScroll();
+    };
+  }, []);
+ 
+  return (
+    <div className="relative h-screen overflow-hidden">
+ 
+      {/* NAVBAR */}
+      <Navbar ref={navbarRef} />
+ 
+      {/* HERO CONTENT */}
+      <div className="flex flex-col items-center justify-center h-[80vh] common-padding">
+ 
+        {/* LOADING BOX */}
+        <div ref={loadingBoxRef} className="relative scale-50">
+ 
+          <div className="backdrop-blur-md h-50 max-w-lg rounded-2xl shadow-2xl flex items-center overflow-hidden">
+ 
+            {/* LEFT BRACE */}
+            <LeftBrace pathRef={leftBracePathRef} />
+ 
+            {/* CONTENT */}
+            <div className="space-y-2 text-lg flex-1 py-3 h-full flex flex-col justify-center items-center text-center">
+              <h1
+                ref={renderingTextRef}
+                className="tracking-wide translate-y-0 text-xl opacity-0"
+              >
+                Rendering..
+              </h1>
+ 
+              <div
+                ref={descriptionLinesRef}
+                className="text-white/70 font-thin px-4 space-y-1 text-[0.7rem] tracking-wide"
+              >
+                <p className="opacity-0">Hello I'm Srikar &</p>
+                <p className="opacity-0">I'm a full-stack developer</p>
+                <p className="opacity-0">Welcome to my portfolio!</p>
+              </div>
+            </div>
+ 
+            {/* RIGHT BRACE */}
+            <RightBrace pathRef={rightBracePathRef} />
+ 
+          </div>
+        </div>
+ 
+        {/* NAME — below the box, revealed with clip-path wipe */}
+      </div>
+    </div>
+  );
 }
+ 

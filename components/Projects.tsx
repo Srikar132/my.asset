@@ -1,0 +1,227 @@
+"use client";
+import { useGSAP } from '@gsap/react'
+import { useRef } from 'react'
+import ProjectSection from './ProjectSection';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/all';
+import projects from '@/data/projects';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Circumference of the SVG circle: 2π × r
+// viewBox is 0 0 120 120, circle r=58 (leaving 2px stroke inset from edge)
+const RADIUS = 58;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ≈ 364.4
+
+const Projects = () => {
+    // useWindowHeight();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const counterRef = useRef<HTMLDivElement>(null);
+    const counterIndexRef = useRef<HTMLSpanElement>(null);
+    const ringRef = useRef<SVGCircleElement>(null);
+
+    useGSAP(() => {
+        const total = sectionRefs.current.length;
+        const counter = counterRef.current;
+        const ring = ringRef.current;
+        if (!counter || !ring) return;
+
+        // ── Init ring: fully hidden (offset = circumference = invisible) ────
+        gsap.set(ring, {
+            strokeDasharray: CIRCUMFERENCE,
+            strokeDashoffset: CIRCUMFERENCE,
+            rotation: -90,          // start from top (12 o'clock)
+            transformOrigin: '50% 50%',
+        });
+
+        // ── Fade counter IN/OUT with the projects section ───────────────────
+        ScrollTrigger.create({
+            trigger: containerRef.current,
+            start: 'top 60%',
+            end: 'bottom bottom',
+            onEnter: () => {
+                gsap.to(counter, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+            },
+            onLeave: () => {
+                gsap.to(counter, { opacity: 0, y: -12, duration: 0.4, ease: 'power2.in' });
+            },
+            onEnterBack: () => {
+                gsap.to(counter, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+            },
+            onLeaveBack: () => {
+                gsap.to(counter, { opacity: 0, y: -12, duration: 0.4, ease: 'power2.in' });
+            },
+        });
+
+        // ── Per-section: pin+scale + counter + ring progress ────────────────
+        sectionRefs.current.forEach((section, i) => {
+            if (!section) return;
+
+            // Progress fraction for this project: goes from i/total → (i+1)/total
+            const progressStart = i / total;
+            const progressEnd = (i + 1) / total;
+            const offsetStart = CIRCUMFERENCE * (1 - progressStart);
+            const offsetEnd = CIRCUMFERENCE * (1 - progressEnd);
+
+            // Animate ring dashoffset as this section scrolls into view
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top 60%',
+                end: 'bottom 60%',
+                scrub: 0.6,
+                onUpdate: (self) => {
+                    // Interpolate offset between this section's start/end progress
+                    const offset = gsap.utils.interpolate(offsetStart, offsetEnd, self.progress);
+                    gsap.set(ring, { strokeDashoffset: offset });
+                },
+            });
+
+            // Counter number flip
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top 60%',
+                onEnter: () => {
+                    const el = counterIndexRef.current;
+                    if (!el) return;
+                    gsap.to(el, {
+                        opacity: 0, y: -8, duration: 0.15, ease: 'power2.in',
+                        onComplete: () => {
+                            el.textContent = String(i + 1).padStart(2, '0');
+                            gsap.fromTo(el,
+                                { opacity: 0, y: 8 },
+                                { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }
+                            );
+                        },
+                    });
+                },
+                onLeaveBack: () => {
+                    const el = counterIndexRef.current;
+                    if (!el) return;
+                    gsap.to(el, {
+                        opacity: 0, y: 8, duration: 0.15, ease: 'power2.in',
+                        onComplete: () => {
+                            el.textContent = String(i).padStart(2, '0');
+                            gsap.fromTo(el,
+                                { opacity: 0, y: -8 },
+                                { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }
+                            );
+                        },
+                    });
+                },
+            });
+
+            // Last card: no pin/scale
+            if (i === total - 1) return;
+
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top top',
+                onEnter: () => gsap.set(section, { willChange: 'transform' }),
+                onLeaveBack: () => gsap.set(section, { willChange: 'auto' }),
+            });
+
+            gsap.to(section, {
+                scale: 0.92,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: `+=${window.innerHeight * (total - i - 1)}`,
+                    pin: true,
+                    pinSpacing: false,
+                    scrub: 1,
+                    anticipatePin: 1,
+                    onLeave: () => gsap.set(section, { willChange: 'auto' }),
+                    onLeaveBack: () => gsap.set(section, { willChange: 'transform' }),
+                },
+            });
+        });
+
+        return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    }, { scope: containerRef });
+
+    return (
+        <div ref={containerRef} className='w-full relative flex flex-col'>
+
+            {/* ── STICKY COUNTER ──────────────────────────────────────────── */}
+            <div
+                ref={counterRef}
+                className="fixed top-8 left-8 z-100 pointer-events-none"
+                style={{ opacity: 0, transform: 'translateY(-12px)' }}
+            >
+                {/* Inner pill */}
+                <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
+                    <span
+                        className="text-[9px] lg:text-xs uppercase tracking-[0.2em] text-white/60"
+                        style={{ fontFamily: 'ui-monospace, monospace' }}
+                    >
+                        Project
+                    </span>
+                    <div
+                        className="text-white flex items-center gap-1"
+                        style={{ fontFamily: 'ui-monospace, monospace' }}
+                    >
+                        <span ref={counterIndexRef} className="font-semibold tabular-nums text-base lg:text-xl">
+                            01
+                        </span>
+                        <span className="text-white/30 text-xs">/</span>
+                        <span className="text-white/50 tabular-nums text-xs lg:text-sm">
+                            {String(projects.length).padStart(2, '0')}
+                        </span>
+                    </div>
+                </div>
+
+                {/* ── PROGRESS RING ──────────────────────────────────────────
+                    SVG sits absolutely over the pill.
+                    The circle uses strokeDashoffset to draw from 0 → full.
+                    GSAP sets dashoffset in real time via ScrollTrigger scrub.
+                ─────────────────────────────────────────────────────────── */}
+                <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
+                    viewBox="0 0 120 120"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    {/* Track ring — always visible, dim */}
+                    <circle
+                        cx="60"
+                        cy="60"
+                        r={RADIUS}
+                        stroke="rgba(255,255,255,0.12)"
+                        strokeWidth="1.5"
+                        fill="none"
+                    />
+                    {/* Progress ring — animated by GSAP */}
+                    <circle
+                        ref={ringRef}
+                        cx="60"
+                        cy="60"
+                        r={RADIUS}
+                        stroke="rgba(255,255,255,0.85)"
+                        strokeWidth="1.5"
+                        fill="none"
+                        strokeLinecap="round"
+                    />
+                </svg>
+            </div>
+
+            {projects.map((project, i) => (
+                <div 
+                    className='p-3 h-screen flex'    
+                    key={project.title ?? i}
+                >
+                    <ProjectSection
+                        ref={(el) => { sectionRefs.current[i] = el; }}
+                        style={{ zIndex: i + 1 }}
+                        project={project}
+                        index={i}
+                        total={projects.length}
+                    />
+                </div>
+            ))}
+
+        </div>
+    );
+};
+
+export default Projects;

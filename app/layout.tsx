@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Fredoka } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-const fredoka = Fredoka({
+const fredoka = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-fredoka",
 });
+
+
 
 export const metadata: Metadata = {
   title: "Srikar.dev — Developer Portfolio",
