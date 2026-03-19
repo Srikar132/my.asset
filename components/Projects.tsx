@@ -147,7 +147,7 @@ const Projects = () => {
             {/* ── STICKY COUNTER ──────────────────────────────────────────── */}
             <div
                 ref={counterRef}
-                className="fixed top-8 left-8 z-100 pointer-events-none"
+                className="fixed top-8 max-sm:right-8 sm:left-8 z-100 pointer-events-none backdrop-blur-lg"
                 style={{ opacity: 0, transform: 'translateY(-12px)' }}
             >
                 {/* Inner pill */}
@@ -207,7 +207,7 @@ const Projects = () => {
 
             {projects.map((project, i) => (
                 <div 
-                    className='p-3 h-screen flex'    
+                    className='common-padding  h-screen flex'    
                     key={project.title ?? i}
                 >
                     <ProjectSection

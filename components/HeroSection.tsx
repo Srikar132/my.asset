@@ -30,7 +30,12 @@ export default function HeroSection() {
     const tl = gsap.timeline();
  
     disablePageScroll();
- 
+
+    // Hide braces initially
+    gsap.set([leftBracePathRef.current, rightBracePathRef.current], {
+      visibility: "visible",
+    });
+
     // ── STEP 0: Hide braces at start so DrawSVG can reveal them ──────────────
     gsap.set([leftBracePathRef.current, rightBracePathRef.current], {
       drawSVG: "0%",
@@ -157,10 +162,10 @@ export default function HeroSection() {
           <div className="backdrop-blur-md h-50 max-w-lg rounded-2xl shadow-2xl flex items-center overflow-hidden">
  
             {/* LEFT BRACE */}
-            <LeftBrace pathRef={leftBracePathRef} />
- 
+            <LeftBrace visibility="hidden" pathRef={leftBracePathRef} />
+
             {/* CONTENT */}
-            <div className="space-y-2 text-lg flex-1 py-3 h-full flex flex-col justify-center items-center text-center">
+            <div className="space-y-2 max-w-[150px] text-lg flex-1 py-3 h-full flex flex-col justify-center items-center text-center">
               <h1
                 ref={renderingTextRef}
                 className="tracking-wide translate-y-0 text-xl opacity-0"
@@ -170,17 +175,18 @@ export default function HeroSection() {
  
               <div
                 ref={descriptionLinesRef}
-                className="text-white/70 font-thin px-4 space-y-1 text-[0.7rem] tracking-wide"
+                className="text-white/70 font-thin  sm:px-4 space-y-1 text-[0.7rem] tracking-wide "
               >
-                <p className="opacity-0">Hello I'm Srikar &</p>
-                <p className="opacity-0">I'm a full-stack developer</p>
-                <p className="opacity-0">Welcome to my portfolio!</p>
+                <p className="opacity-0 whitespace-nowrap">Hello I'm Srikar</p>
+                <p className="opacity-0 whitespace-nowrap">I'm a full-stack developer &</p>
+                <p className="opacity-0 whitespace-nowrap">a freelancer</p>
+                <p className="opacity-0 whitespace-nowrap">Welcome to my portfolio!</p>
               </div>
             </div>
  
             {/* RIGHT BRACE */}
-            <RightBrace pathRef={rightBracePathRef} />
- 
+            <RightBrace visibility="hidden" pathRef={rightBracePathRef} />
+
           </div>
         </div>
  
