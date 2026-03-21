@@ -1,10 +1,11 @@
 interface RightBraceProps {
   pathRef?: React.Ref<SVGPathElement>;
-  visibility? : string
+  visibility? : string;
+  color?: string;
 }
-function RightBrace({ pathRef, visibility }: RightBraceProps) {
+function RightBrace({ pathRef, visibility, color }: RightBraceProps) {
   return (
-    <svg className="h-full w-auto text-white" style={{ visibility : visibility as React.CSSProperties['visibility'] }} viewBox="0 0 50 100" fill="none">
+    <svg className="h-full w-auto" color={color} style={{ visibility : visibility as React.CSSProperties['visibility'] }} viewBox="0 0 50 100" fill="none">
       <path
         ref={pathRef}
         d="M 10 10 

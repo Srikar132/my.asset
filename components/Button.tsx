@@ -29,17 +29,18 @@ export default function Button({
   type = 'button',
   href,
   target,
+  svgColor,
   rel
-}: BraceButtonProps) {
+}: BraceButtonProps & { svgColor?: string }) {
   const content = (
     <>
       {/* LEFT BRACE */}
       <div
-        className="opacity-0 group-hover:opacity-100 transition-opacity h-full"
+        className="h-full"
         style={{ transitionDuration }}
       >
         <LeftBrace
-
+          color={svgColor}
         />
       </div>
 
@@ -48,10 +49,11 @@ export default function Button({
 
       {/* RIGHT BRACE */}
       <div
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
+        className=" h-full"
         style={{ transitionDuration }}
       >
         <RightBrace
+          color={svgColor}
         />
       </div>
     </>

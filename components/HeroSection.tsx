@@ -61,14 +61,10 @@ export default function HeroSection() {
       { drawSVG: "100% 0%", duration: 0.9, ease: 'power2.inOut' },
       '<' // same time as left brace
     );
- 
+
+
     // ── STEP 3: "Rendering.." text fades up into view ────────────────────────
-    tl.fromTo(
-      renderingTextRef.current,
-      { opacity: 0, y: 12 },
-      { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
-      '-=0.3'
-    );
+
  
     // ── STEP 4: Brief loading pause ──────────────────────────────────────────
     tl.to({}, { duration: 0.9 });
@@ -78,7 +74,7 @@ export default function HeroSection() {
       y: -110,
       scale: 1,
       duration: 1.2,
-      ease: 'power3.inOut',
+      ease: 'circ.out',
     });
  
     // ── STEP 6: "Rendering.." → "Hello!" text swap + shrink ──────────────────
@@ -92,10 +88,12 @@ export default function HeroSection() {
       {
         duration: 0.6,
         text: { value: 'Hello!', delimiter: '' },
-        ease: 'none',
+        ease: 'power2.inOut',
+        y : 0
       },
       '-=0.9'
     );
+
  
     // ── STEP 7: Description lines stagger in ─────────────────────────────────
     tl.fromTo(
@@ -140,10 +138,17 @@ export default function HeroSection() {
       },
       '-=0.4'
     );
- 
+
+
+
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);   
+
     return () => {
       tl.kill();
       enablePageScroll();
+      history.scrollRestoration = 'auto';
+      window.scrollTo(0, 0);
     };
   }, []);
  
@@ -165,10 +170,10 @@ export default function HeroSection() {
             <LeftBrace visibility="hidden" pathRef={leftBracePathRef} />
 
             {/* CONTENT */}
-            <div className="space-y-2 max-w-[150px] text-lg flex-1 py-3 h-full flex flex-col justify-center items-center text-center">
+            <div className="space-y-2 relative max-w-[150px] text-lg flex-1 py-3 h-full flex flex-col justify-center items-center text-center">
               <h1
                 ref={renderingTextRef}
-                className="tracking-wide translate-y-0 text-xl opacity-0"
+                className="tracking-wide text-xl translate-y-12"
               >
                 Rendering..
               </h1>

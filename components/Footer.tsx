@@ -117,7 +117,7 @@ export default function Footer() {
   }, { scope: footerRef });
 
   return (
-    <footer ref={footerRef} className="w-full bg-background border-t border-white/5">
+    <footer ref={footerRef} className="w-full bg-background border-t border-white/5 mt-50">
       {/* Top divider line — animated */}
       <div
         ref={dividerRef}
