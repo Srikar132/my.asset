@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import SmoothScrollProvider from "@/providers/ScrollSmoothProvider";
 
 const fredoka = Montserrat({
   subsets: ["latin"],
@@ -59,7 +60,13 @@ export default function RootLayout({
       <body
         className={`${fredoka.variable} antialiased`}
       >
-        {children}
+        <SmoothScrollProvider>
+          <div id="smooth-wrapper">
+            <div id="smooth-content">
+              {children}
+            </div>
+          </div>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

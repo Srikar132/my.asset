@@ -367,6 +367,7 @@ const MyCapabilities = () => {
 
   return (
     <section
+      id='skills'
       ref={containerRef}
       className="my-capabilities common-padding h-screen relative w-full"
     >
@@ -376,6 +377,7 @@ const MyCapabilities = () => {
         <nav className="z-10 bg-transparent absolute top-0 left-0 right-0 flex group items-center justify-center gap-2 sm:gap-6 pt-4 sm:pt-7 pb-2 shrink-0 flex-wrap px-2">
           {TABS.map((tab, i) => (
             <Button
+              key={tab.label}
               className={`
                   font-mono text-[9px] sm:text-[11px] uppercase tracking-widest sm:tracking-[0.14em]
                   transition-all duration-200 outline-none h-6 sm:h-7

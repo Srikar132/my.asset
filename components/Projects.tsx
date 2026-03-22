@@ -21,11 +21,14 @@ const Projects = () => {
     const counterIndexRef = useRef<HTMLSpanElement>(null);
     const ringRef = useRef<SVGCircleElement>(null);
 
+
+
     useGSAP(() => {
         const total = sectionRefs.current.length;
         const counter = counterRef.current;
         const ring = ringRef.current;
         if (!counter || !ring) return;
+
 
         // ── Init ring: fully hidden (offset = circumference = invisible) ────
         gsap.set(ring, {
@@ -127,7 +130,7 @@ const Projects = () => {
                 scrollTrigger: {
                     trigger: section,
                     start: 'top top',
-                    end: `+=${window.innerHeight * (total - i - 1)}`,
+                    end: () => `+=${window.innerHeight * (total - i - 1)}`,
                     pin: true,
                     pinSpacing: false,
                     scrub: 1,
@@ -138,89 +141,93 @@ const Projects = () => {
             });
         });
 
-        return () => ScrollTrigger.getAll().forEach(t => t.kill());
+        return () => {
+            sectionRefs.current.forEach(s => s && gsap.set(s, { willChange: 'auto' }));
+            ScrollTrigger.getAll().forEach(t => t.kill());
+        };
     }, { scope: containerRef });
 
     return (
-        <div ref={containerRef} className='w-full relative flex flex-col'>
+        <section id='work' ref={containerRef} className='w-full relative flex flex-col'>
+            <div className='w-full flex-1'>
+                {/* ── STICKY COUNTER ──────────────────────────────────────────── */}
+                <div
 
-            {/* ── STICKY COUNTER ──────────────────────────────────────────── */}
-            <div
-                ref={counterRef}
-                className="fixed top-8 max-sm:right-8 sm:left-8 z-100 pointer-events-none backdrop-blur-lg"
-                style={{ opacity: 0, transform: 'translateY(-12px)' }}
-            >
-                {/* Inner pill */}
-                <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
-                    <span
-                        className="text-[9px] lg:text-xs uppercase tracking-[0.2em] text-white/60"
-                        style={{ fontFamily: 'ui-monospace, monospace' }}
-                    >
-                        Project
-                    </span>
-                    <div
-                        className="text-white flex items-center gap-1"
-                        style={{ fontFamily: 'ui-monospace, monospace' }}
-                    >
-                        <span ref={counterIndexRef} className="font-semibold tabular-nums text-base lg:text-xl">
-                            01
+                    ref={counterRef}
+                    className="fixed top-8 max-sm:right-8 sm:left-8 z-100 pointer-events-none backdrop-blur-lg"
+                    style={{ opacity: 0, transform: 'translateY(-12px)' }}
+                >
+                    {/* Inner pill */}
+                    <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
+                        <span
+                            className="text-[9px] lg:text-xs uppercase tracking-[0.2em] text-white/60"
+                            style={{ fontFamily: 'ui-monospace, monospace' }}
+                        >
+                            Project
                         </span>
-                        <span className="text-white/30 text-xs">/</span>
-                        <span className="text-white/50 tabular-nums text-xs lg:text-sm">
-                            {String(projects.length).padStart(2, '0')}
-                        </span>
+                        <div
+                            className="text-white flex items-center gap-1"
+                            style={{ fontFamily: 'ui-monospace, monospace' }}
+                        >
+                            <span ref={counterIndexRef} className="font-semibold tabular-nums text-base lg:text-xl">
+                                01
+                            </span>
+                            <span className="text-white/30 text-xs">/</span>
+                            <span className="text-white/50 tabular-nums text-xs lg:text-sm">
+                                {String(projects.length).padStart(2, '0')}
+                            </span>
+                        </div>
                     </div>
+
+                    {/* ── PROGRESS RING ──────────────────────────────────────────
+                        SVG sits absolutely over the pill.
+                        The circle uses strokeDashoffset to draw from 0 → full.
+                        GSAP sets dashoffset in real time via ScrollTrigger scrub.
+                    ─────────────────────────────────────────────────────────── */}
+                    <svg
+                        className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
+                        viewBox="0 0 120 120"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        {/* Track ring — always visible, dim */}
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r={RADIUS}
+                            stroke="rgba(255,255,255,0.12)"
+                            strokeWidth="1.5"
+                            fill="none"
+                        />
+                        {/* Progress ring — animated by GSAP */}
+                        <circle
+                            ref={ringRef}
+                            cx="60"
+                            cy="60"
+                            r={RADIUS}
+                            stroke="rgba(255,255,255,0.85)"
+                            strokeWidth="1.5"
+                            fill="none"
+                            strokeLinecap="round"
+                        />
+                    </svg>
                 </div>
 
-                {/* ── PROGRESS RING ──────────────────────────────────────────
-                    SVG sits absolutely over the pill.
-                    The circle uses strokeDashoffset to draw from 0 → full.
-                    GSAP sets dashoffset in real time via ScrollTrigger scrub.
-                ─────────────────────────────────────────────────────────── */}
-                <svg
-                    className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
-                    viewBox="0 0 120 120"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    {/* Track ring — always visible, dim */}
-                    <circle
-                        cx="60"
-                        cy="60"
-                        r={RADIUS}
-                        stroke="rgba(255,255,255,0.12)"
-                        strokeWidth="1.5"
-                        fill="none"
-                    />
-                    {/* Progress ring — animated by GSAP */}
-                    <circle
-                        ref={ringRef}
-                        cx="60"
-                        cy="60"
-                        r={RADIUS}
-                        stroke="rgba(255,255,255,0.85)"
-                        strokeWidth="1.5"
-                        fill="none"
-                        strokeLinecap="round"
-                    />
-                </svg>
+                {projects.map((project, i) => (
+                    <div
+                        className='common-padding  h-screen flex'
+                        key={project.title ?? i}
+                    >
+                        <ProjectSection
+                            ref={(el) => { sectionRefs.current[i] = el; }}
+                            style={{ zIndex: i + 1 }}
+                            project={project}
+                            index={i}
+                            total={projects.length}
+                        />
+                    </div>
+                ))}
             </div>
-
-            {projects.map((project, i) => (
-                <div 
-                    className='common-padding  h-screen flex'    
-                    key={project.title ?? i}
-                >
-                    <ProjectSection
-                        ref={(el) => { sectionRefs.current[i] = el; }}
-                        style={{ zIndex: i + 1 }}
-                        project={project}
-                        index={i}
-                        total={projects.length}
-                    />
-                </div>
-            ))}
-
-        </div>
+        </section>
     );
 };
 

@@ -114,6 +114,7 @@ export default function AboutMe() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       className="w-full common-padding py-24 lg:py-44 mt-20 relative overflow-hidden"
     >

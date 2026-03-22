@@ -336,7 +336,9 @@ function buildCycler(
       },
     });
 
-    timerRef.current = setTimeout(cycle, interval);
+    timerRef.current = setTimeout(() => {
+      requestAnimationFrame(cycle);
+    }, interval);
   };
 
   timerRef.current = setTimeout(cycle, initialDelay);
@@ -349,13 +351,14 @@ function buildCycler(
 
 const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
   ({ project, style }, ref) => {
-    const { title, description, images, urls, category, techStack , achievement } = project;
+    const { title, description, images, urls, category, techStack, achievement } = project;
 
     const containerRef = useRef<HTMLDivElement>(null);
     const imageStackRef = useRef<HTMLDivElement>(null);
     const mobileImageStackRef = useRef<HTMLDivElement>(null);
     const achievementRef = useRef<HTMLParagraphElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
+    const linksRef = useRef<HTMLDivElement>(null);
     const descRef = useRef<HTMLParagraphElement>(null);
     const categoryRef = useRef<HTMLDivElement>(null);
     const mobileCategoryRef = useRef<HTMLDivElement>(null);
@@ -380,14 +383,19 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
         .fromTo(titleRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.2')
         .fromTo(descRef.current, { opacity: 0, y: 20 }, { opacity: 0.6, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
         .fromTo(achievementRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-        .fromTo('#url-links', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.1 }, '-=0.2');
+        .fromTo(linksRef.current?.querySelectorAll('a') ?? [],
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.1 },
+          '-=0.2'
+        )
+
 
       if (stack) {
         gsap.fromTo(stack, { opacity: 0, y: 30 }, {
           opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
           scrollTrigger: { trigger: section, start: 'top 75%', once: true },
         });
-        buildCycler(stack, loopTimerRef, 1000, 2200, (images ?? []).length);
+        buildCycler(stack, loopTimerRef, 3000, 2200, (images ?? []).length);
       }
 
       if (mobileStack) {
@@ -395,7 +403,7 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
           opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
           scrollTrigger: { trigger: section, start: 'top 78%', once: true },
         });
-        buildCycler(mobileStack, mobileLoopTimerRef, 2800, 2500, (images ?? []).length);
+        buildCycler(mobileStack, mobileLoopTimerRef, 4000, 2500, (images ?? []).length);
       }
 
       return () => clearLoops();
@@ -443,7 +451,9 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
               >
                 {description}
               </p>
-              <ProjectLinks urls={urls} type={project.type} />
+              <div ref={linksRef}>
+                <ProjectLinks urls={urls} type={project.type} />
+              </div>
             </div>
 
             {/* Mobile-only: category + image stack */}

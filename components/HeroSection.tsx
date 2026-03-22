@@ -6,14 +6,15 @@ import { useGSAP } from '@gsap/react';
 import Navbar from './Navbar';
 import LeftBrace from './LeftBrace';
 import RightBrace from './RightBrace';
-import {disablePageScroll , enablePageScroll} from "@fluejs/noscroll"
 import { DrawSVGPlugin  , TextPlugin , ScrollTrigger} from 'gsap/all';
+import { useLenis } from '@/providers/ScrollSmoothProvider';
 // import { enable } from "fuejs"
 // Register TextPlugin
 
 gsap.registerPlugin(TextPlugin , ScrollTrigger , DrawSVGPlugin);
 
 export default function HeroSection() {
+  const lenis = useLenis();
   const loadingBoxRef = useRef<HTMLDivElement>(null);
 //   const nameRef = useRef<HTMLHeadingElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ export default function HeroSection() {
   useGSAP(() => {
     const tl = gsap.timeline();
  
-    disablePageScroll();
+    lenis?.stop();
 
     // Hide braces initially
     gsap.set([leftBracePathRef.current, rightBracePathRef.current], {
@@ -78,20 +79,21 @@ export default function HeroSection() {
     });
  
     // ── STEP 6: "Rendering.." → "Hello!" text swap + shrink ──────────────────
-    tl.to(
-      renderingTextRef.current,
-      { fontSize: '0.8rem', duration: 0.5, ease: 'power2.inOut' },
-      '-=1.0'
-    );
+    // tl.to(
+    //   renderingTextRef.current,
+    //   { , duration: 0.5, ease: 'power2.inOut' },
+    //   '-=1.0'
+    // );
     tl.to(
       renderingTextRef.current,
       {
+        fontSize: '0.8rem',
         duration: 0.6,
         text: { value: 'Hello!', delimiter: '' },
         ease: 'power2.inOut',
         y : 0
       },
-      '-=0.9'
+      '-=1.1'
     );
 
  
@@ -134,7 +136,7 @@ export default function HeroSection() {
         opacity: 1,
         duration: 0.7,
         ease: 'power2.out',
-        onComplete: () => enablePageScroll(),
+        onComplete: () => lenis?.start(),
       },
       '-=0.4'
     );
@@ -146,11 +148,11 @@ export default function HeroSection() {
 
     return () => {
       tl.kill();
-      enablePageScroll();
+      lenis?.start();
       history.scrollRestoration = 'auto';
       window.scrollTo(0, 0);
     };
-  }, []);
+  }, [lenis]);
  
   return (
     <div className="relative h-screen overflow-hidden">
