@@ -7,6 +7,14 @@
 
 
   --primary : #6366f1;
+  --accent: #818cf8;
+
+  /* Surfaces - Dark */
+  --surface: #18181b;
+  --gray-600: #52525b;
+
+  /* Effects */
+  --glow-purple: 0 0 8px rgba(99, 102, 241, 0.6);
 
   /* Borders - Dark */
   --border: #27272a;
@@ -21,8 +29,16 @@
   --color-primary: var(--primary);
   --color-accent: var(--accent);
   
-  /* Font families - Fredoka */
+  /* Font families */
   --font-family-sans: var(--font-fredoka), system-ui, -apple-system, sans-serif;
+  --font-family-display: var(--font-display), "Arial Narrow", sans-serif;
+  --font-family-mono: var(--font-mono), ui-monospace, monospace;
+}
+
+:root {
+  /* Hero */
+  --hero-bg: #09090f;
+  --neon-yellow: #f5f500;
 }
 
 
@@ -63,4 +79,22 @@ body {
   .common-padding {
     @apply px-5 py-5;
   }
+}
+
+/* ── Lenis smooth-scroll (prevents native scroll conflicts / jank) ── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }

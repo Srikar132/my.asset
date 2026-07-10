@@ -110,33 +110,42 @@ function ProjectLinks({
   urls?: { live?: string; github?: string };
   type: 'app' | 'website';
 }) {
+  const hasLive = !!urls?.live;
+  // Not deployed → point the CTA at GitHub instead of a dead live link
+  const primaryHref = hasLive ? urls!.live! : urls?.github || '#';
+  const primaryLabel = hasLive ? `Visit ${type === 'app' ? 'App' : 'Site'}` : 'Visit GitHub';
+
   return (
     <div className="inline-flex gap-5">
       <Link
         id="url-links"
-        href={urls?.live ?? '#'}
+        href={primaryHref}
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-2 group opacity-0"
       >
         <span className="text-white/40 text-lg font-light">(</span>
         <span className="text-white uppercase tracking-[0.18em] text-xs font-semibold group-hover:text-blue-400 transition-colors duration-300">
-          Visit {type === 'app' ? 'App' : 'Site'}
+          {primaryLabel}
         </span>
         <span className="text-white/60 text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 inline-block">
           ↗
         </span>
         <span className="text-white/40 text-lg font-light">)</span>
       </Link>
-      <Link
-        id="url-links"
-        href={urls?.github ?? '#'}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 group opacity-0 rounded-full"
-      >
-        <Image src="/github.svg" alt="GitHub logo" width={20} height={16} className="invert" />
-      </Link>
+
+      {/* Separate GitHub icon only when the primary CTA is the live site */}
+      {hasLive && urls?.github && (
+        <Link
+          id="url-links"
+          href={urls.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 group opacity-0 rounded-full"
+        >
+          <Image src="/github.svg" alt="GitHub logo" width={20} height={16} className="invert" />
+        </Link>
+      )}
     </div>
   );
 }
@@ -158,7 +167,7 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop }: CardProps) {
   return (
     <div
       className={[
-        'absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/10  border-red-500',
+        'absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/10',
         isDesktop ? 'rounded-[2.8rem]' : 'rounded-[1.8rem]',
       ].join(' ')}
       style={{

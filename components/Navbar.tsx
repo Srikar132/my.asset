@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import Button from './Button';
 import { useLenis } from '@/providers/ScrollSmoothProvider';
-import NavTransitionOverlay, { NavTransitionOverlayHandle } from './NavTransistionOverlay';
+import NavTransitionOverlay, { NavTransitionOverlayHandle } from './NavTransitionOverlay';
 
 interface NavbarProps {
   className?: string;

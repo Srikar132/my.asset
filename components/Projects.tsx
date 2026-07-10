@@ -17,6 +17,7 @@ const Projects = () => {
     // useWindowHeight();
     const containerRef = useRef<HTMLDivElement>(null);
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const wrapperRefs = useRef<(HTMLDivElement | null)[]>([]);
     const counterRef = useRef<HTMLDivElement>(null);
     const counterIndexRef = useRef<HTMLSpanElement>(null);
     const ringRef = useRef<SVGCircleElement>(null);
@@ -69,7 +70,7 @@ const Projects = () => {
 
             // Animate ring dashoffset as this section scrolls into view
             ScrollTrigger.create({
-                trigger: section,
+                trigger: wrapperRefs.current[i],
                 start: 'top 60%',
                 end: 'bottom 60%',
                 scrub: 0.6,
@@ -82,7 +83,7 @@ const Projects = () => {
 
             // Counter number flip
             ScrollTrigger.create({
-                trigger: section,
+                trigger: wrapperRefs.current[i],
                 start: 'top 60%',
                 onEnter: () => {
                     const el = counterIndexRef.current;
@@ -114,31 +115,25 @@ const Projects = () => {
                 },
             });
 
-            // Last card: no pin/scale
+            // Subtle depth — each card scales / fades a touch as the NEXT sticky
+            // card slides up over it. Pure scrub (no pin) → smooth, no stutter.
             if (i === total - 1) return;
-
-            ScrollTrigger.create({
-                trigger: section,
-                start: 'top top',
-                onEnter: () => gsap.set(section, { willChange: 'transform' }),
-                onLeaveBack: () => gsap.set(section, { willChange: 'auto' }),
-            });
-
-            gsap.to(section, {
-                scale: 0.92,
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: section,
-                    start: 'top top',
-                    end: () => `+=${window.innerHeight * (total - i - 1)}`,
-                    pin: true,
-                    pinSpacing: false,
-                    scrub: 1,
-                    anticipatePin: 1,
-                    onLeave: () => gsap.set(section, { willChange: 'auto' }),
-                    onLeaveBack: () => gsap.set(section, { willChange: 'transform' }),
-                },
-            });
+            gsap.fromTo(
+                section,
+                { scale: 1, opacity: 1 },
+                {
+                    scale: 0.93,
+                    opacity: 0.65,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: wrapperRefs.current[i],
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: true,
+                        invalidateOnRefresh: true,
+                    },
+                }
+            );
         });
 
         return () => {
@@ -213,8 +208,12 @@ const Projects = () => {
                 </div>
 
                 {projects.map((project, i) => (
+                    // native sticky stacking: each card slides up and sits on top
+                    // of the previous one — smooth, no GSAP pin
                     <div
-                        className='common-padding  h-screen flex'
+                        ref={(el) => { wrapperRefs.current[i] = el; }}
+                        className='sticky top-0 h-screen common-padding flex items-stretch'
+                        style={{ zIndex: i + 1 }}
                         key={project.title ?? i}
                     >
                         <ProjectSection

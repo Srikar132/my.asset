@@ -26,7 +26,7 @@ const projects : Project[] = [
       "https://res.cloudinary.com/diyxlznar/image/upload/v1773937857/IMG_20260319_163820_gbutp8.jpg"
     ],
     urls: {
-      github: "https://github.com/Srikar132/lockin.git",
+      github: "https://github.com/Srikar132/lockin",
       live: ""
     },
     techStack: ["Flutter" , "Kotlin" , "Firebase"],
@@ -47,7 +47,7 @@ const projects : Project[] = [
 
     ],
     urls: {
-      github: "",
+      github: "https://github.com/Srikar132/nexus-ai",
       live: ""
     },
     techStack: ["Next.js" , "FastAPI" , "LangGraph"],
@@ -66,7 +66,7 @@ const projects : Project[] = [
         "https://res.cloudinary.com/diyxlznar/image/upload/v1773937856/image-4_b3047o.png"
     ],
     urls: {
-      github: "",
+      github: "https://github.com/Srikar132/healverse-server",
       live: ""
     },
     techStack: ["React Native" , "Spring Boot" , "AI"],

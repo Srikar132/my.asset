@@ -324,16 +324,6 @@ const MyCapabilities = () => {
   useGSAP(() => {
     if (!containerRef.current) return;
 
-    // just for container to stay in view for 1 sec like puase for
-    ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: 'top top',
-      end: '+=100',
-      scrub: true,
-      pin: true,
-    });
-
-
     ScrollTrigger.create({
       trigger: containerRef.current,
       once: true,

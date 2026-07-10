@@ -116,7 +116,7 @@ export default function AboutMe() {
     <section
       id="about"
       ref={sectionRef}
-      className="w-full common-padding py-24 lg:py-44 mt-20 relative overflow-hidden"
+      className="w-full common-padding py-24 lg:py-32 relative overflow-hidden"
     >
 
       <div className="max-w-7xl mx-auto">
@@ -198,9 +198,6 @@ export default function AboutMe() {
           </div>
         </div>
       </div>
-
-
-      <div className="h-[50vh]"/>
     </section>
   );
 }

@@ -1,277 +1,214 @@
 'use client';
 
-import Link from "next/link";
-import { useRef } from "react";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger, DrawSVGPlugin } from "gsap/all";
-import { Github, Linkedin, Code2 } from "lucide-react";
-import LeftBrace from "./LeftBrace";
-import RightBrace from "./RightBrace";
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
+import LeftBrace from './LeftBrace';
+import RightBrace from './RightBrace';
+import { useLenis } from '@/providers/ScrollSmoothProvider';
 
 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
-// ── Data ────────────────────────────────────────────────────────────────────
-const projects = [
-  { label: "Deepfake Detector", href: "https://github.com/Srikar132/deepfake-detection" },
-  { label: "E-Commerce Platform", href: "https://github.com/Srikar132" },
-];
+const FONT_DISPLAY = 'var(--font-display), "Arial Narrow", sans-serif';
+const FONT_MONO = 'var(--font-mono), ui-monospace, monospace';
 
-const teammates = [
-  { label: "Teammate One", href: "#" },
-  { label: "Teammate Two", href: "#" },
-  { label: "Teammate Three", href: "#" },
-];
+const EMAIL = 'srikarchinthala25@gmail.com';
 
-const socials = [
-  {
-    icon: Github,
-    href: "https://github.com/Srikar132",
-    label: "GitHub",
-  },
-  {
-    // LeetCode doesn't have a lucide icon — use a custom SVG glyph
-    icon: Code2,
-    href: "https://leetcode.com/u/srikar132/",
-    label: "LeetCode",
-  },
-  {
-    icon: Linkedin,
-    href: "https://www.linkedin.com/in/srikar-chinthala-b99a5a2a2",
-    label: "LinkedIn",
-  },
-];
-
-// ── Component ───────────────────────────────────────────────────────────────
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
+  const taglineRef = useRef<HTMLHeadingElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const braceLeftRef = useRef<SVGPathElement>(null);
+  const braceRightRef = useRef<SVGPathElement>(null);
   const dividerRef = useRef<HTMLDivElement>(null);
-  const leftBraceRef = useRef<SVGPathElement>(null);
-  const rightBraceRef = useRef<SVGPathElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const colRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
+  const nameInnerRef = useRef<HTMLHeadingElement>(null);
 
-  useGSAP(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: footerRef.current,
-        start: "top 85%",
-        once: true,
-      },
-    });
+  const lenis = useLenis();
+  const [time, setTime] = useState('--:--:--');
+  const [grid, setGrid] = useState(false);
 
-    // 1. Horizontal divider draws in
-    tl.fromTo(
-      dividerRef.current,
-      { scaleX: 0, transformOrigin: "left center" },
-      { scaleX: 1, duration: 0.9, ease: "power3.inOut" }
-    );
+  // Live IST clock
+  useEffect(() => {
+    const tick = () =>
+      setTime(
+        new Date().toLocaleTimeString('en-GB', {
+          timeZone: 'Asia/Kolkata',
+          hour12: false,
+        })
+      );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
-    // 2. Braces draw themselves (same technique as hero)
-    gsap.set([leftBraceRef.current, rightBraceRef.current], {
-      drawSVG: "0%",
-      visibility: "visible",
-    });
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: footerRef.current, start: 'top 80%', once: true },
+      });
 
-    tl.to(
-      leftBraceRef.current,
-      { drawSVG: "0% 100%", duration: 0.8, ease: "power2.inOut" },
-      "-=0.5"
-    );
-    tl.to(
-      rightBraceRef.current,
-      { drawSVG: "100% 0%", duration: 0.8, ease: "power2.inOut" },
-      "<"
-    );
+      gsap.set([braceLeftRef.current, braceRightRef.current], { drawSVG: '0%' });
 
-    // 3. Name fades up
-    tl.fromTo(
-      nameRef.current,
-      { opacity: 0, y: 18 },
-      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      "-=0.4"
-    );
+      tl.from(taglineRef.current, { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' })
+        .to(braceLeftRef.current, { drawSVG: '0% 100%', duration: 0.6, ease: 'power2.inOut' }, '-=0.4')
+        .to(braceRightRef.current, { drawSVG: '100% 0%', duration: 0.6, ease: 'power2.inOut' }, '<')
+        .from(ctaRef.current, { opacity: 0, duration: 0.5 }, '-=0.3')
+        .fromTo(dividerRef.current, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, '-=0.2')
+        .from(
+          metaRef.current?.querySelectorAll('.meta-col') ?? [],
+          { y: 16, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' },
+          '-=0.4'
+        )
+        .fromTo(
+          nameInnerRef.current,
+          { yPercent: 110 },
+          { yPercent: 0, duration: 1.1, ease: 'expo.out' },
+          '-=0.3'
+        );
+    },
+    { scope: footerRef }
+  );
 
-    // 4. Columns stagger up
-    tl.fromTo(
-      colRefs.current.filter(Boolean),
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        ease: "power2.out",
-        stagger: 0.12,
-      },
-      "-=0.3"
-    );
+  const backToTop = () => {
+    if (lenis) lenis.scrollTo(0, { duration: 1.6 });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-    // 5. Bottom bar
-    tl.fromTo(
-      bottomRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.5 },
-      "-=0.2"
-    );
-  }, { scope: footerRef });
+  const metaLink =
+    'text-white/50 hover:text-white transition-colors duration-200';
 
   return (
-    <footer ref={footerRef} className="w-full bg-background border-t border-white/5 mt-50">
-      {/* Top divider line — animated */}
-      <div
-        ref={dividerRef}
-        className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        style={{ transformOrigin: "left center" }}
-      />
-
-      <div className="container mx-auto max-w-7xl common-padding py-16">
-
-        {/* ── BRAND ROW ──────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-3 mb-12 h-12">
-          {/* Left brace */}
-          <div className="h-12 w-8 flex-shrink-0" style={{ visibility: "hidden" }}>
-            <LeftBrace pathRef={leftBraceRef} />
-          </div>
-
-          {/* Name */}
-          <h2
-            ref={nameRef}
-            className="font-mono text-lg tracking-[0.25em] uppercase text-white/80 opacity-0"
-          >
-            Srikar
-          </h2>
-
-          {/* Right brace */}
-          <div className="h-12 w-8 flex-shrink-0" style={{ visibility: "hidden" }}>
-            <RightBrace pathRef={rightBraceRef} />
+    <footer
+      ref={footerRef}
+      className="relative w-full overflow-hidden bg-background border-t border-white/5 pt-28 sm:pt-40"
+    >
+      {/* optional grid overlay */}
+      {grid && (
+        <div className="pointer-events-none fixed inset-0 z-[999] px-4 sm:px-8 lg:px-12">
+          <div className="mx-auto grid h-full max-w-[1600px] grid-cols-4 sm:grid-cols-12 gap-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="h-full bg-white/[0.04] hidden sm:block first:block" />
+            ))}
           </div>
         </div>
+      )}
 
-        {/* ── GRID ────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-
-          {/* — About — */}
-          <div
-            ref={(el) => { colRefs.current[0] = el; }}
-            className="col-span-2 md:col-span-1 opacity-0"
-          >
-            <ColHeading>
-                SOCIAL
-            </ColHeading>
-
-            {/* Socials */}
-            <div className="flex items-center gap-3 mt-5">
-              {socials.map(({ icon: Icon, href, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/40 transition-all duration-200"
-                >
-                  <Icon size={14} />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* — Projects — */}
-          <div
-            ref={(el) => { colRefs.current[1] = el; }}
-            className="opacity-0"
-          >
-            <ColHeading>OTHER WORKS</ColHeading>
-            <ul className="space-y-2.5">
-              {projects.map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-1.5 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-white/20 group-hover:bg-white/70 transition-colors" />
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* — Site — */}
-          <div
-            ref={(el) => { colRefs.current[2] = el; }}
-            className="opacity-0"
-          >
-            <ColHeading>Site</ColHeading>
-            <ul className="space-y-2.5">
-              {[
-                { label: "Home", href: "/" },
-                { label: "Projects", href: "#projects" },
-                { label: "Skills", href: "#skills" },
-                { label: "Contact", href: "#contact" },
-              ].map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    className="text-sm text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-1.5 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-white/20 group-hover:bg-white/70 transition-colors" />
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* — Team — */}
-          <div
-            ref={(el) => { colRefs.current[3] = el; }}
-            className="opacity-0"
-          >
-            <ColHeading>Team</ColHeading>
-            <ul className="space-y-2.5">
-              {teammates.map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-1.5 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-white/20 group-hover:bg-white/70 transition-colors" />
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* ── BOTTOM BAR ──────────────────────────────────────────────────── */}
-        <div
-          ref={bottomRef}
-          className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-14 pt-6 border-t border-white/5 opacity-0"
+      <div className="px-4 sm:px-8 lg:px-12">
+        {/* ── Tagline ── */}
+        <h2
+          ref={taglineRef}
+          className="max-w-[820px] text-[clamp(1.6rem,3.4vw,2.35rem)] leading-[1.3] text-white normal-case font-normal"
+          style={{ fontFamily: 'var(--font-fredoka), sans-serif' }}
         >
-          <p className="text-xs text-white/25 font-mono tracking-widest uppercase">
-            © {new Date().getFullYear()} Srikar Chinthala
-          </p>
-          <p className="text-xs text-white/20 font-mono tracking-widest">
-            srikarchinthala25@gmail.com
-          </p>
+          Let&rsquo;s build and ship something remarkable. Open to agency collaborations,
+          freelance work, and fully remote full-time opportunities.
+        </h2>
+
+        {/* ── Braced CTA ── */}
+        <div ref={ctaRef} className="mt-12">
+          <Link
+            href={`mailto:${EMAIL}`}
+            className="group inline-flex items-center gap-2 h-9"
+          >
+            <span className="h-9 shrink-0 text-white/70">
+              <LeftBrace pathRef={braceLeftRef} />
+            </span>
+            <span
+              className="flex items-center gap-2 text-[11px] tracking-[0.25em] text-white group-hover:text-white/70 transition-colors"
+              style={{ fontFamily: FONT_MONO }}
+            >
+              LET&rsquo;S WORK TOGETHER
+              <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                ↗
+              </span>
+            </span>
+            <span className="h-9 shrink-0 text-white/70">
+              <RightBrace pathRef={braceRightRef} />
+            </span>
+          </Link>
+        </div>
+
+        {/* ── Divider ── */}
+        <div
+          ref={dividerRef}
+          className="mt-24 sm:mt-32 h-px w-full bg-white/15"
+          style={{ transformOrigin: 'left center' }}
+        />
+
+        {/* ── Meta row ── */}
+        <div
+          ref={metaRef}
+          className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-[11px] tracking-[0.15em] text-white/50"
+          style={{ fontFamily: FONT_MONO }}
+        >
+          {/* col 1 — contact */}
+          <div className="meta-col flex flex-col gap-2 items-start">
+            <Link href={`mailto:${EMAIL}`} className={`${metaLink} uppercase`}>
+              {EMAIL}
+            </Link>
+            <Link
+              href="https://github.com/Srikar132"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={metaLink}
+            >
+              GITHUB
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/srikar-chinthala-b99a5a2a2/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={metaLink}
+            >
+              LINKEDIN
+            </Link>
+            <Link
+              href="https://leetcode.com/u/srikar132/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={metaLink}
+            >
+              LEETCODE
+            </Link>
+          </div>
+
+          {/* col 2 — utilities */}
+          <div className="meta-col flex flex-col gap-2 items-start">
+            <span className="tabular-nums">IST — {time}</span>
+            <button onClick={backToTop} className={`${metaLink} text-left`}>
+              BACK TO TOP
+            </button>
+            <button
+              onClick={() => setGrid((g) => !g)}
+              className={`${metaLink} text-left flex items-center gap-2`}
+            >
+              SHOW GRID <span className="text-white/30">{grid ? '✕' : '⊞'}</span>
+            </button>
+          </div>
+
+          {/* col 3 — credit */}
+          <div className="meta-col flex sm:justify-end items-start">
+            <span>
+              DESIGNED BY <span className="text-white/80">SRIKAR</span>
+            </span>
+          </div>
+        </div>
+
+        {/* ── Giant name ── */}
+        <div className="mt-16 sm:mt-24 overflow-hidden">
+          <h2
+            ref={nameInnerRef}
+            className="text-white/90 leading-[0.78] tracking-tight normal-case whitespace-nowrap text-center text-[clamp(3.5rem,17vw,17rem)]"
+            style={{ fontFamily: FONT_DISPLAY, willChange: 'transform', WebkitTextStroke: '2px currentColor' }}
+          >
+            SRIKAR DEV
+          </h2>
         </div>
       </div>
     </footer>
-  );
-}
-
-// ── Small helper ─────────────────────────────────────────────────────────────
-function ColHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-white/30 mb-4">
-      {children}
-    </h3>
   );
 }
