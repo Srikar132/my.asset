@@ -12,7 +12,6 @@ import { useLenis } from '@/providers/ScrollSmoothProvider';
 
 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
-const FONT_DISPLAY = 'var(--font-display), "Arial Narrow", sans-serif';
 const FONT_MONO = 'var(--font-mono), ui-monospace, monospace';
 
 const EMAIL = 'srikarchinthala25@gmail.com';
@@ -29,7 +28,6 @@ export default function Footer() {
 
   const lenis = useLenis();
   const [time, setTime] = useState('--:--:--');
-  const [grid, setGrid] = useState(false);
 
   // Live IST clock
   useEffect(() => {
@@ -86,17 +84,6 @@ export default function Footer() {
       ref={footerRef}
       className="relative w-full overflow-hidden bg-background border-t border-white/5 pt-28 sm:pt-40"
     >
-      {/* optional grid overlay */}
-      {grid && (
-        <div className="pointer-events-none fixed inset-0 z-[999] px-4 sm:px-8 lg:px-12">
-          <div className="mx-auto grid h-full max-w-[1600px] grid-cols-4 sm:grid-cols-12 gap-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="h-full bg-white/[0.04] hidden sm:block first:block" />
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="px-4 sm:px-8 lg:px-12">
         {/* ── Tagline ── */}
         <h2
@@ -182,12 +169,6 @@ export default function Footer() {
             <button onClick={backToTop} className={`${metaLink} text-left`}>
               BACK TO TOP
             </button>
-            <button
-              onClick={() => setGrid((g) => !g)}
-              className={`${metaLink} text-left flex items-center gap-2`}
-            >
-              SHOW GRID <span className="text-white/30">{grid ? '✕' : '⊞'}</span>
-            </button>
           </div>
 
           {/* col 3 — credit */}
@@ -198,12 +179,12 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Giant name ── */}
-        <div className="mt-16 sm:mt-24 overflow-hidden">
+        {/* ── Giant name — full-bleed (breaks out of the px container) ── */}
+        <div className="mt-16 sm:mt-24 overflow-hidden -mx-4 sm:-mx-8 lg:-mx-12">
           <h2
             ref={nameInnerRef}
-            className="text-white/90 leading-[0.78] tracking-tight normal-case whitespace-nowrap text-center text-[clamp(3.5rem,17vw,17rem)]"
-            style={{ fontFamily: FONT_DISPLAY, willChange: 'transform', WebkitTextStroke: '2px currentColor' }}
+            className="text-white/90 leading-none tracking-[-0.02em] normal-case whitespace-nowrap text-center font-bold text-[14.5vw]"
+            style={{ fontFamily: 'var(--font-fredoka), sans-serif', willChange: 'transform' }}
           >
             SRIKAR DEV
           </h2>

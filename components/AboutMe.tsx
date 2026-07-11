@@ -18,7 +18,7 @@ const PARAGRAPHS = [
   },
   {
     tag: "03 — now",
-    text: "Right now I'm deep in AI-native apps — LLM agents, real-time systems, mobile. I want to work on problems where the stakes actually matter.",
+    text: "Right now I'm a full-stack developer intern at Bellcorp Studio — building and shipping production features end-to-end, from APIs and data models to polished, responsive UI.",
   },
 ];
 
@@ -116,7 +116,7 @@ export default function AboutMe() {
     <section
       id="about"
       ref={sectionRef}
-      className="w-full common-padding py-24 lg:py-32 relative overflow-hidden"
+      className="w-full px-6 sm:px-10 lg:px-16 py-24 lg:py-32 relative overflow-hidden"
     >
 
       <div className="max-w-7xl mx-auto">

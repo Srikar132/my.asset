@@ -243,7 +243,9 @@ export default function HeroSection() {
     >
       <Navbar ref={navRef} className="absolute top-0 left-0" />
 
-      <div ref={contentRef} className="absolute inset-0">
+      {/* opacity:0 inline → hidden on first paint so the intro doesn't flash the
+          finished layout before GSAP resets + animates it */}
+      <div ref={contentRef} className="absolute inset-0" style={{ opacity: 0 }}>
         {/* ── ABOUT — curly braces (DrawSVG) frame HELLO! + intro ── */}
         <div className="absolute left-1/2 top-[26vh] lg:top-[13vh] -translate-x-1/2 z-20 px-6">
           <div className="flex items-center justify-center gap-3 sm:gap-4">

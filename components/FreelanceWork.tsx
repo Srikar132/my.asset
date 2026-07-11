@@ -9,7 +9,6 @@ import freelance from '@/data/freelance';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FONT_DISPLAY = 'var(--font-display), "Arial Narrow", sans-serif';
 const FONT_MONO = 'var(--font-mono), ui-monospace, monospace';
 
 export default function FreelanceWork() {
@@ -87,17 +86,14 @@ export default function FreelanceWork() {
 
             {/* ── Info ── */}
             <div className="text-white">
-              <h3
-                className="fw-rise relative inline-block normal-case leading-[0.85] tracking-tight text-white text-[clamp(2.75rem,7vw,6rem)]"
-                style={{ fontFamily: FONT_DISPLAY, WebkitTextStroke: '1px currentColor' }}
-              >
+              <h3 className="fw-rise inline-block normal-case font-black leading-none tracking-tight text-white text-[clamp(2.5rem,7vw,5.5rem)]">
                 {p.name}
                 <Link
                   href={p.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="absolute -top-1 -right-14 text-[11px] tracking-[0.2em] text-white/50 hover:text-white transition-colors"
-                  style={{ fontFamily: FONT_MONO, WebkitTextStroke: '0' }}
+                  className="align-super ml-2 text-[11px] tracking-[0.2em] text-white/50 hover:text-white transition-colors"
+                  style={{ fontFamily: FONT_MONO }}
                 >
                   [OPEN]
                 </Link>
