@@ -1,7 +1,6 @@
 import AboutMe from "@/components/AboutMe";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import FreelanceWork from "@/components/FreelanceWork";
 import HeroSection from "@/components/HeroSection";
 import MyCapabilities from "@/components/MyCapabilities";
 import Projects from "@/components/Projects";
@@ -14,7 +13,6 @@ export default function Page() {
       <Projects />
       <AboutMe />
       <MyCapabilities />
-      <FreelanceWork />
       <Contact />
       <Footer />
     </main>
