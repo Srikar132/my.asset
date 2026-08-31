@@ -1,9 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowUpRight, Folder, Github, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Folder, Github } from "lucide-react";
 import type { WorkProject } from "@/lib/works";
 
 type WorksExplorerProps = {
@@ -11,20 +7,6 @@ type WorksExplorerProps = {
 };
 
 export default function WorksExplorer({ works }: WorksExplorerProps) {
-  const [query, setQuery] = useState("");
-
-  const filteredWorks = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return works;
-
-    return works.filter((work) =>
-      [work.name, work.category, ...work.techStack]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalized)
-    );
-  }, [query, works]);
-
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-8 sm:py-8 lg:px-12">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-2xl border border-white/10 bg-surface/70 shadow-2xl shadow-black/30 backdrop-blur-xl">
@@ -34,42 +16,30 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
             <span className="h-3 w-3 rounded-full bg-white/15" />
             <span className="h-3 w-3 rounded-full bg-white/15" />
           </div>
-          <div className="mx-auto hidden items-center gap-2 text-[10px] tracking-[0.22em] text-foreground/35 sm:flex">
+          <div className="mx-auto flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] text-foreground/35">
             <Folder className="size-3.5" />
             <span>WORKS</span>
           </div>
           <span className="w-[52px] text-right font-mono text-[10px] text-foreground/30">
-            {filteredWorks.length.toString().padStart(2, "0")}
+            {works.length.toString().padStart(2, "0")}
           </span>
         </header>
 
         <div className="flex min-h-[calc(100vh-7rem)] flex-col">
-          <div className="flex flex-col gap-5 border-b border-white/10 px-5 py-7 sm:px-8 sm:py-9 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="mb-2 font-mono text-[10px] tracking-[0.24em] text-accent/70">/ ARCHIVE</p>
-              <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Works</h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/45 sm:text-base">
-                A small archive of things I&apos;ve built, broken, learned from, and shipped.
-              </p>
-            </div>
-
-            <label className="flex h-10 w-full max-w-xs items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 text-foreground/40 focus-within:border-primary/50">
-              <Search className="size-4 shrink-0" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search works..."
-                className="w-full bg-transparent text-xs text-foreground outline-none placeholder:text-foreground/25"
-              />
-            </label>
+          <div className="border-b border-white/10 px-5 py-7 sm:px-8 sm:py-9">
+            <p className="mb-2 font-mono text-[10px] tracking-[0.24em] text-accent/70">/ ARCHIVE</p>
+            <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Works</h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/45 sm:text-base">
+              A small archive of things I&apos;ve built, broken, learned from, and shipped.
+            </p>
           </div>
 
           <div className="grid flex-1 grid-cols-2 gap-px bg-white/10 sm:grid-cols-3 lg:grid-cols-4">
-            {filteredWorks.map((work, index) => (
+            {works.map((work, index) => (
               <Link
                 href={`/works/${work.slug}`}
                 key={work.slug}
-                className="group min-h-48 bg-surface p-5 transition-colors hover:bg-white/[0.045] sm:min-h-56 sm:p-6"
+                className="group min-h-48 bg-surface p-5 transition-colors hover:bg-white/[0.045] focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:min-h-56 sm:p-6"
               >
                 <div className="flex h-full flex-col justify-between">
                   <div className="flex items-start justify-between gap-4">
@@ -96,20 +66,10 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
                 </div>
               </Link>
             ))}
-
-            {!filteredWorks.length && (
-              <div className="col-span-full flex min-h-64 items-center justify-center p-8 text-center">
-                <div>
-                  <Folder className="mx-auto mb-3 size-10 text-foreground/15" />
-                  <p className="text-sm text-foreground/45">No folders match &quot;{query}&quot;.</p>
-                  <Button variant="ghost" size="sm" className="mt-2" onClick={() => setQuery("")}>Clear search</Button>
-                </div>
-              </div>
-            )}
           </div>
 
           <footer className="flex flex-col gap-2 border-t border-white/10 px-5 py-3 font-mono text-[9px] text-foreground/25 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-            <span>{filteredWorks.length} {filteredWorks.length === 1 ? "item" : "items"}</span>
+            <span>{works.length} {works.length === 1 ? "item" : "items"}</span>
             <span className="flex items-center gap-1.5"><Github className="size-3" /> PERSONAL PROJECT ARCHIVE</span>
           </footer>
         </div>
