@@ -3,6 +3,7 @@ import * as React from "react";
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "default" | "outline" | "ghost";
   size?: "default" | "sm" | "icon";
+  asChild?: boolean;
 };
 
 const variants = {
@@ -17,14 +18,25 @@ const sizes = {
   icon: "h-10 w-10",
 };
 
+const buttonClasses = (variant: ButtonProps["variant"], size: ButtonProps["size"], className: string) =>
+  `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:pointer-events-none disabled:opacity-50 ${variants[variant ?? "default"]} ${sizes[size ?? "default"]} ${className}`;
+
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = "", variant = "default", size = "default", ...props }, ref) => (
-    <button
-      ref={ref}
-      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
-      {...props}
-    />
-  )
+  ({ className = "", variant = "default", size = "default", asChild = false, children, ...props }, ref) => {
+    const classes = buttonClasses(variant, size, className);
+
+    if (asChild && React.isValidElement<{ className?: string }>(children)) {
+      return React.cloneElement(children, {
+        className: `${classes} ${children.props.className ?? ""}`,
+      });
+    }
+
+    return (
+      <button ref={ref} className={classes} {...props}>
+        {children}
+      </button>
+    );
+  }
 );
 
 Button.displayName = "Button";
