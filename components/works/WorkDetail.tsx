@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, ExternalLink, FileText, Folder, Github } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import MarkdownContent from "@/components/works/MarkdownContent";
 import type { WorkProject } from "@/lib/works";
 
@@ -9,12 +8,15 @@ type WorkDetailProps = {
   content: string;
 };
 
+const linkClassName =
+  "inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.07] hover:border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
+
 export default function WorkDetail({ work, content }: WorkDetailProps) {
   return (
     <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-8 sm:py-8 lg:px-12">
       <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-surface/70 shadow-2xl shadow-black/30 backdrop-blur-xl">
         <header className="flex h-12 items-center border-b border-white/10 bg-white/[0.025] px-4 sm:px-5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" aria-label="Window controls">
             <span className="h-3 w-3 rounded-full bg-white/15" />
             <span className="h-3 w-3 rounded-full bg-white/15" />
             <span className="h-3 w-3 rounded-full bg-white/15" />
@@ -28,9 +30,9 @@ export default function WorkDetail({ work, content }: WorkDetailProps) {
         </header>
 
         <div className="border-b border-white/10 px-5 py-6 sm:px-8 sm:py-8">
-          <Button asChild variant="ghost" size="sm" className="-ml-3 mb-7 text-foreground/45">
-            <Link href="/works"><ArrowLeft className="size-4" /> Back to works</Link>
-          </Button>
+          <Link href="/works" className="mb-7 inline-flex h-9 items-center gap-2 rounded-lg px-3 text-xs font-medium text-foreground/45 transition-colors hover:bg-white/[0.05] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+            <ArrowLeft className="size-4" /> Back to works
+          </Link>
 
           <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -40,17 +42,13 @@ export default function WorkDetail({ work, content }: WorkDetailProps) {
             </div>
 
             <div className="flex shrink-0 flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm">
-                <a href={work.github} target="_blank" rel="noreferrer">
-                  <Github className="size-3.5" /> GitHub <ArrowUpRight className="size-3" />
-                </a>
-              </Button>
+              <a className={linkClassName} href={work.github} target="_blank" rel="noreferrer">
+                <Github className="size-3.5" /> GitHub <ArrowUpRight className="size-3" />
+              </a>
               {work.live ? (
-                <Button asChild size="sm">
-                  <a href={work.live} target="_blank" rel="noreferrer">
-                    <ExternalLink className="size-3.5" /> Live <ArrowUpRight className="size-3" />
-                  </a>
-                </Button>
+                <a className={`${linkClassName} border-primary/30 bg-primary text-background hover:bg-primary/90`} href={work.live} target="_blank" rel="noreferrer">
+                  <ExternalLink className="size-3.5" /> Live <ArrowUpRight className="size-3" />
+                </a>
               ) : null}
             </div>
           </div>
