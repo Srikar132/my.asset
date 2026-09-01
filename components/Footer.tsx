@@ -5,12 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
-import LeftBrace from './LeftBrace';
-import RightBrace from './RightBrace';
 import { useLenis } from '@/providers/ScrollSmoothProvider';
 
-gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+gsap.registerPlugin(ScrollTrigger);
 
 const FONT_MONO = 'var(--font-mono), ui-monospace, monospace';
 
@@ -18,10 +15,6 @@ const EMAIL = 'srikarchinthala25@gmail.com';
 
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
-  const taglineRef = useRef<HTMLHeadingElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const braceLeftRef = useRef<SVGPathElement>(null);
-  const braceRightRef = useRef<SVGPathElement>(null);
   const dividerRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const nameInnerRef = useRef<HTMLHeadingElement>(null);
@@ -49,13 +42,7 @@ export default function Footer() {
         scrollTrigger: { trigger: footerRef.current, start: 'top 80%', once: true },
       });
 
-      gsap.set([braceLeftRef.current, braceRightRef.current], { drawSVG: '0%' });
-
-      tl.from(taglineRef.current, { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' })
-        .to(braceLeftRef.current, { drawSVG: '0% 100%', duration: 0.6, ease: 'power2.inOut' }, '-=0.4')
-        .to(braceRightRef.current, { drawSVG: '100% 0%', duration: 0.6, ease: 'power2.inOut' }, '<')
-        .from(ctaRef.current, { opacity: 0, duration: 0.5 }, '-=0.3')
-        .fromTo(dividerRef.current, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, '-=0.2')
+      tl.fromTo(dividerRef.current, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, '-=0.2')
         .from(
           metaRef.current?.querySelectorAll('.meta-col') ?? [],
           { y: 16, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' },
@@ -82,43 +69,9 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative w-full overflow-hidden bg-background border-t border-white/5 pt-28 sm:pt-40"
+      className="relative w-full overflow-hidden bg-background border-t border-white/5"
     >
       <div className="px-4 sm:px-8 lg:px-12">
-        {/* ── Tagline ── */}
-        <h2
-          ref={taglineRef}
-          className="max-w-[820px] text-[clamp(1.6rem,3.4vw,2.35rem)] leading-[1.3] text-white normal-case font-normal"
-          style={{ fontFamily: 'var(--font-fredoka), sans-serif' }}
-        >
-          Let&rsquo;s build and ship something remarkable. Open to agency collaborations,
-          freelance work, and fully remote full-time opportunities.
-        </h2>
-
-        {/* ── Braced CTA ── */}
-        <div ref={ctaRef} className="mt-12">
-          <Link
-            href={`mailto:${EMAIL}`}
-            className="group inline-flex items-center gap-2 h-9"
-          >
-            <span className="h-9 shrink-0 text-white/70">
-              <LeftBrace pathRef={braceLeftRef} />
-            </span>
-            <span
-              className="flex items-center gap-2 text-[11px] tracking-[0.25em] text-white group-hover:text-white/70 transition-colors"
-              style={{ fontFamily: FONT_MONO }}
-            >
-              LET&rsquo;S WORK TOGETHER
-              <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                ↗
-              </span>
-            </span>
-            <span className="h-9 shrink-0 text-white/70">
-              <RightBrace pathRef={braceRightRef} />
-            </span>
-          </Link>
-        </div>
-
         {/* ── Divider ── */}
         <div
           ref={dividerRef}

@@ -1,5 +1,6 @@
 import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import ContactFooter from "@/components/ContactFooter";
+import ContactNavbar from "@/components/ContactNavbar";
 
 export const metadata = {
   title: "Contact - Srikar.dev",
@@ -9,8 +10,9 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <main className="relative w-full">
+      <ContactNavbar />
       <Contact />
-      <Footer />
+      <ContactFooter />
     </main>
   );
 }
