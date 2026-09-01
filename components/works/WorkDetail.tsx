@@ -1,89 +1,58 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ExternalLink, FileText, Folder, Github } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import MarkdownContent from "@/components/works/MarkdownContent";
 import type { WorkProject } from "@/lib/works";
 
-type WorkDetailProps = {
-  work: WorkProject;
-  content: string;
-};
+type WorkDetailProps = { work: WorkProject; content: string };
 
 const linkClassName =
-  "inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-xs font-medium text-foreground transition-colors hover:bg-white/[0.07] hover:border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
+  "inline-flex items-center gap-1.5 text-[10px] font-medium tracking-[0.16em] uppercase text-foreground/55 transition-colors hover:text-foreground";
 
 export default function WorkDetail({ work, content }: WorkDetailProps) {
   return (
-    <main className="min-h-screen bg-background px-4 py-5 text-foreground sm:px-8 sm:py-8 lg:px-12">
-      <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-surface/70 shadow-2xl shadow-black/30 backdrop-blur-xl">
-        <header className="flex h-12 items-center border-b border-white/10 bg-white/[0.025] px-4 sm:px-5">
-          <div className="flex items-center gap-2" aria-label="Window controls">
-            <span className="h-3 w-3 rounded-full bg-white/15" />
-            <span className="h-3 w-3 rounded-full bg-white/15" />
-            <span className="h-3 w-3 rounded-full bg-white/15" />
-          </div>
-          <div className="mx-auto flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-foreground/30">
-            <Folder className="size-3.5" />
-            <span className="hidden sm:inline">WORKS /</span>
-            <span>{work.name}</span>
-          </div>
-          <span className="w-[52px]" />
-        </header>
+    <main className="min-h-screen bg-background px-5 py-24 text-foreground sm:px-8 lg:px-12 lg:py-32">
+      <div className="mx-auto max-w-4xl">
+        <Link
+          href="/works"
+          className="inline-flex items-center gap-2 text-[10px] font-medium tracking-[0.16em] text-foreground/35 uppercase transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3.5" /> Back to works
+        </Link>
 
-        <div className="border-b border-white/10 px-5 py-6 sm:px-8 sm:py-8">
-          <Link href="/works" className="mb-7 inline-flex h-9 items-center gap-2 rounded-lg px-3 text-xs font-medium text-foreground/45 transition-colors hover:bg-white/[0.05] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-            <ArrowLeft className="size-4" /> Back to works
-          </Link>
-
-          <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+        <header className="mt-12 border-b border-white/10 pb-10 sm:mt-16 sm:pb-12">
+          <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="mb-2 font-mono text-[9px] tracking-[0.24em] text-accent/70">/ PROJECT FILE</p>
-              <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">{work.name}</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/45 sm:text-base">{work.description}</p>
+              <h1 className="text-4xl font-normal tracking-[-0.04em] text-white normal-case sm:text-6xl">
+                {work.name}
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-foreground/45 normal-case sm:text-lg">
+                {work.description}
+              </p>
             </div>
 
-            <div className="flex shrink-0 flex-wrap gap-2">
+            <div className="flex shrink-0 gap-5">
               <a className={linkClassName} href={work.github} target="_blank" rel="noreferrer">
                 <Github className="size-3.5" /> GitHub <ArrowUpRight className="size-3" />
               </a>
               {work.live ? (
-                <a className={`${linkClassName} border-primary/30 bg-primary text-background hover:bg-primary/90`} href={work.live} target="_blank" rel="noreferrer">
+                <a className={linkClassName} href={work.live} target="_blank" rel="noreferrer">
                   <ExternalLink className="size-3.5" /> Live <ArrowUpRight className="size-3" />
                 </a>
               ) : null}
             </div>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-2">
+          <div className="mt-7 flex flex-wrap gap-x-4 gap-y-2">
             {work.techStack.map((tech) => (
-              <span key={tech} className="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1.5 font-mono text-[9px] text-foreground/45">
+              <span key={tech} className="font-mono text-[9px] text-foreground/30 normal-case">
                 {tech}
               </span>
             ))}
-            <span className="rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1.5 font-mono text-[9px] text-foreground/30">
-              {work.category}
-            </span>
           </div>
-        </div>
+        </header>
 
-        <div className="grid lg:grid-cols-[180px_1fr]">
-          <aside className="hidden border-r border-white/10 p-6 lg:block">
-            <div className="sticky top-6">
-              <div className="flex items-center gap-2 font-mono text-[9px] tracking-[0.18em] text-foreground/25">
-                <FileText className="size-3.5" /> README.MD
-              </div>
-              <div className="mt-5 space-y-2 font-mono text-[9px] text-foreground/20">
-                <p>01  OBJECTIVE</p>
-                <p>02  STACK</p>
-                <p>03  ARCHITECTURE</p>
-                <p>04  CHALLENGES</p>
-                <p>05  THOUGHTS</p>
-              </div>
-            </div>
-          </aside>
-
-          <div className="px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-            <MarkdownContent content={content} />
-          </div>
+        <div className="pt-12 sm:pt-16">
+          <MarkdownContent content={content} />
         </div>
       </div>
     </main>
