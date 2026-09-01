@@ -33,7 +33,7 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(({ className = '' }, ref) =>
   useGSAP(() => {
     const overlay = overlayRef.current;
     const links   = linksRef.current?.children;
-    const nav = ref?.current;
+    const nav = typeof ref === 'function' ? null : ref?.current;
     if (!overlay || !links) return;
 
     gsap.set(overlay, { clipPath: 'inset(0 0 100% 0)', display: 'none' });
