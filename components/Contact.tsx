@@ -89,17 +89,19 @@ export default function Contact() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-16 items-stretch">
             {/* Left — avatar + socials */}
             <div ref={revealRef} className="c-rise flex flex-col">
-              <div className="flex-1 overflow-hidden rounded-2xl border border-white/10 bg-surface relative group">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none" />
-                <Image
-                  src={AVATAR}
-                  alt="Profile"
-                  width={800}
-                  height={800}
-                  draggable={false}
-                  onDragStart={(e) => e.preventDefault()}
-                  className="w-full h-full object-cover"
-                />
+              <div className="flex-1 rounded-2xl border-[5px] border-white/80 p-2 bg-white/5 relative group">
+                <div className="w-full h-full overflow-hidden rounded-xl bg-surface relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none" />
+                  <Image
+                    src={AVATAR}
+                    alt="Profile"
+                    width={800}
+                    height={800}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
               </div>
 
               <div className="c-rise mt-6 flex items-center justify-center gap-6">

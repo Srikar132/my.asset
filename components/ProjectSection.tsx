@@ -168,7 +168,7 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop, sectionIndex }:
     <div
       className={[
         'absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/10',
-        isDesktop ? 'rounded-[2.8rem]' : 'rounded-[1.8rem]',
+        isDesktop ? 'rounded-[2.2rem]' : 'rounded-[1.2rem]',
       ].join(' ')}
       style={{
         transform: stackTransform(fromFront),
@@ -179,14 +179,14 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop, sectionIndex }:
     >
       {/* Notch */}
       <div
-        className={`absolute top-0 left-1/2 -translate-x-1/2 z-10 bg-black ${isDesktop ? 'w-[72px] h-2.5 rounded-b-2xl' : 'w-[52px] h-1.5 rounded-b-xl'
+        className={`absolute top-0 left-1/2 -translate-x-1/2 z-10 bg-black ${isDesktop ? 'w-[60px] h-2 rounded-b-xl' : 'w-[36px] h-1.5 rounded-b-lg'
           }`}
       />
       {/* Volume buttons */}
-      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-left-2.5 top-[100px] w-1 h-9' : '-left-2 top-20 w-[3px] h-7'}`} />
-      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-left-2.5 top-[148px] w-1 h-9' : '-left-2 top-[116px] w-[3px] h-7'}`} />
+      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-left-2 top-[80px] w-1 h-7' : '-left-1.5 top-14 w-[2px] h-5'}`} />
+      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-left-2 top-[120px] w-1 h-7' : '-left-1.5 top-20 w-[2px] h-5'}`} />
       {/* Power button */}
-      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-right-2.5 top-[120px] w-1 h-13' : '-right-2 top-24 w-[3px] h-10'}`} />
+      <div className={`absolute rounded-full bg-white/20 ${isDesktop ? '-right-2 top-[100px] w-1 h-10' : '-right-1.5 top-16 w-[2px] h-6'}`} />
       {/* Screen */}
       <div className="relative w-full h-full bg-black">
         <Image
@@ -194,7 +194,7 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop, sectionIndex }:
           alt={`${title} screenshot ${cardIndex + 1}`}
           fill
           className="object-cover object-top"
-          sizes={isDesktop ? '220px' : '28vw'}
+          sizes={isDesktop ? '200px' : '28vw'}
           priority={sectionIndex === 0 && cardIndex === 0}
         />
       </div>
@@ -209,7 +209,7 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop, sectionIndex }:
 function WebFrame({ src, title, cardIndex, fromFront, liveUrl, isDesktop, sectionIndex }: CardProps) {
   return (
     <div
-      className={`absolute inset-0 overflow-hidden shadow-2xl ${isDesktop ? 'rounded-2xl' : 'rounded-xl'}`}
+      className={`absolute inset-0 overflow-hidden shadow-2xl ${isDesktop ? 'rounded-2xl' : 'rounded-lg'}`}
       style={{
         transform: stackTransform(fromFront),
         transformOrigin: 'bottom center',
@@ -261,21 +261,22 @@ function ImageStack({ stackRef, images, title, liveUrl, type, isDesktop, section
   const count = sliced.length;
 
   const cardW = isDesktop
-    ? (type === 'app' ? 220 : 480)
-    : (type === 'app' ? 140 : 280);
+    ? (type === 'app' ? 200 : 480)
+    : (type === 'app' ? 100 : 260);
   const cardH = isDesktop
-    ? (type === 'app' ? 440 : 320)
-    : (type === 'app' ? 280 : 180);
+    ? (type === 'app' ? 400 : 270)
+    : (type === 'app' ? 180 : 160);
 
   const peekRoom = (count - 1) * PEEK_Y;
   const containerH = cardH + peekRoom;
-  const containerW = type === 'app' ? cardW : (isDesktop ? cardW : '100%');
+  const containerW = type === 'app' ? cardW : (isDesktop ? cardW : (type === 'website' ? '300px' : '100%'));
+  const containerStyle: React.CSSProperties = { height: containerH, width: containerW };
 
   return (
     <div
       ref={stackRef}
-      className={`relative opacity-0 ${isDesktop ? 'hidden lg:block' : 'lg:hidden'}`}
-      style={{ width: containerW, height: containerH }}
+      className={`relative opacity-0 ${isDesktop ? 'hidden lg:block' : 'lg:hidden'} ${type === 'website' && !isDesktop ? 'mx-auto' : ''}`}
+      style={containerStyle}
     >
       <div
         className="absolute bottom-0 left-0 right-0"
@@ -436,59 +437,59 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
       >
         <BackgroundLayer src={images?.[0]} />
 
-        <div className="relative z-10 h-full grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] px-6 py-8 sm:px-10 sm:py-12 lg:px-20 lg:py-20">
+        <div className="relative z-10 h-full grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] px-4 py-6 sm:px-6 sm:py-10 lg:px-12 lg:py-16">
 
           {/* LEFT: content column */}
-          <div className="flex flex-col justify-between items-start">
+            <div className="flex flex-col gap-6 sm:gap-8">
 
-            <CategoryStrip
-              stripRef={mobileCategoryRef}
-              category={category}
-              techStack={techStack}
-              className="w-full lg:hidden"
-            />
+              <CategoryStrip
+                stripRef={mobileCategoryRef}
+                category={category}
+                techStack={techStack}
+                className="w-full lg:hidden"
+              />
 
-            {/* Title, description, links */}
-            <div className="space-y-3 sm:space-y-5 pb-4 mt-auto">
-              <p
-                ref={achievementRef}
-                className="text-white text-xs sm:text-sm leading-relaxed max-w-[340px] opacity-0"
-              >{achievement}</p>
-              <h2
-                ref={titleRef}
-                className="text-[clamp(2rem,6vw,5rem)] font-black leading-none tracking-tight text-white opacity-0"
-              >
-                {title}
-              </h2>
-              <p
-                ref={descRef}
-                className="text-white text-xs sm:text-sm leading-relaxed max-w-[340px] opacity-0"
-              >
-                {description}
-              </p>
-              <div ref={linksRef}>
-                <ProjectLinks urls={urls} type={project.type} />
+              {/* Title, description, links */}
+              <div className="space-y-3 sm:space-y-5">
+                <p
+                  ref={achievementRef}
+                  className="text-white text-xs sm:text-sm leading-relaxed max-w-[340px] opacity-0"
+                >{achievement}</p>
+                <h2
+                  ref={titleRef}
+                  className="text-[clamp(2rem,6vw,5rem)] font-black leading-none tracking-tight text-white opacity-0"
+                >
+                  {title}
+                </h2>
+                <p
+                  ref={descRef}
+                  className="text-white text-xs sm:text-sm leading-relaxed max-w-[340px] opacity-0"
+                >
+                  {description}
+                </p>
+                <div ref={linksRef}>
+                  <ProjectLinks urls={urls} type={project.type} />
+                </div>
+              </div>
+
+              {/* Mobile-only: image stack */}
+              <div className="lg:hidden w-full flex flex-col items-center">
+                <div className="max-w-[300px] mx-auto w-full">
+                  <ImageStack
+                    stackRef={mobileImageStackRef}
+                    images={images ?? []}
+                    title={title}
+                    liveUrl={urls?.live}
+                    type={project.type}
+                    isDesktop={false}
+                    sectionIndex={index}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Mobile-only: category + image stack */}
-            <div className="lg:hidden w-full flex flex-col items-center gap-4">
-
-              <ImageStack
-                stackRef={mobileImageStackRef}
-                images={images ?? []}
-                title={title}
-                liveUrl={urls?.live}
-                type={project.type}
-                isDesktop={false}
-                sectionIndex={index}
-              />
-            </div>
-
-          </div>
-
           {/* RIGHT (desktop only): category strip top, image stack bottom */}
-          <div className="hidden lg:flex b  max-w-md w-full ml-auto flex-col justify-between items-center gap-6 min-h-0">
+          <div className="hidden lg:flex w-full ml-auto flex-col justify-between items-center gap-6 min-h-0">
             <CategoryStrip
               stripRef={categoryRef}
               category={category}
