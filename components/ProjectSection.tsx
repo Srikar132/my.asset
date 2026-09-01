@@ -44,6 +44,7 @@ type ProjectSectionProps = {
 function BackgroundLayer({ src }: { src?: string }) {
   return (
     <>
+      {/* TODO: perf — replace runtime blur-xl with Next/Image placeholder="blur" + blurDataURL */}
       <div
         className="absolute inset-0 blur-xl"
         style={{
@@ -118,7 +119,6 @@ function ProjectLinks({
   return (
     <div className="inline-flex gap-5">
       <Link
-        id="url-links"
         href={primaryHref}
         target="_blank"
         rel="noopener noreferrer"
@@ -137,7 +137,6 @@ function ProjectLinks({
       {/* Separate GitHub icon only when the primary CTA is the live site */}
       {hasLive && urls?.github && (
         <Link
-          id="url-links"
           href={urls.github}
           target="_blank"
           rel="noopener noreferrer"
@@ -157,13 +156,14 @@ function ProjectLinks({
 type CardProps = {
   src: string;
   title: string;
-  cardIndex: number; // DOM order index (0 = back of stack, last = front)
-  fromFront: number; // 0 = front, 1 = one behind, etc.
+  cardIndex: number;
+  fromFront: number;
   liveUrl?: string;
   isDesktop: boolean;
+  sectionIndex: number;
 };
 
-function AppFrame({ src, title, cardIndex, fromFront, isDesktop }: CardProps) {
+function AppFrame({ src, title, cardIndex, fromFront, isDesktop, sectionIndex }: CardProps) {
   return (
     <div
       className={[
@@ -195,7 +195,7 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop }: CardProps) {
           fill
           className="object-cover object-top"
           sizes={isDesktop ? '220px' : '28vw'}
-          priority={cardIndex === 0}
+          priority={sectionIndex === 0 && cardIndex === 0}
         />
       </div>
     </div>
@@ -206,12 +206,12 @@ function AppFrame({ src, title, cardIndex, fromFront, isDesktop }: CardProps) {
 // WebFrame — one browser-chrome card
 // ─────────────────────────────────────────────────────────────────────────────
 
-function WebFrame({ src, title, cardIndex, fromFront, liveUrl, isDesktop }: CardProps) {
+function WebFrame({ src, title, cardIndex, fromFront, liveUrl, isDesktop, sectionIndex }: CardProps) {
   return (
     <div
-      className={`absolute inset-0 overflow-hidden shadow-2xl ${isDesktop ? 'rounded-2xl' : 'rounded-xl'} translate-y-[${fromFront * -PEEK_Y}px]`}
+      className={`absolute inset-0 overflow-hidden shadow-2xl ${isDesktop ? 'rounded-2xl' : 'rounded-xl'}`}
       style={{
-        transform: ` scale(${1 - fromFront * SCALE_DEC})`,
+        transform: stackTransform(fromFront),
         transformOrigin: 'bottom center',
         zIndex: cardIndex + 1,
       }}
@@ -233,7 +233,7 @@ function WebFrame({ src, title, cardIndex, fromFront, liveUrl, isDesktop }: Card
           fill
           className="object-cover object-top"
           sizes={isDesktop ? '480px' : '80vw'}
-          priority={cardIndex === 0}
+          priority={sectionIndex === 0 && cardIndex === 0}
         />
       </div>
     </div>
@@ -253,13 +253,13 @@ type ImageStackProps = {
   liveUrl?: string;
   type: 'app' | 'website';
   isDesktop: boolean;
+  sectionIndex: number;
 };
 
-function ImageStack({ stackRef, images, title, liveUrl, type, isDesktop }: ImageStackProps) {
+function ImageStack({ stackRef, images, title, liveUrl, type, isDesktop, sectionIndex }: ImageStackProps) {
   const sliced = (images ?? []).slice(0, 3);
   const count = sliced.length;
 
-  // Front card dimensions
   const cardW = isDesktop
     ? (type === 'app' ? 220 : 480)
     : (type === 'app' ? 140 : 280);
@@ -272,25 +272,18 @@ function ImageStack({ stackRef, images, title, liveUrl, type, isDesktop }: Image
   const containerW = type === 'app' ? cardW : (isDesktop ? cardW : '100%');
 
   return (
-    // Outer div: full height including peek room at the top
     <div
       ref={stackRef}
       className={`relative opacity-0 ${isDesktop ? 'hidden lg:block' : 'lg:hidden'}`}
       style={{ width: containerW, height: containerH }}
     >
-      {/*
-        Inner div: exactly cardH tall, positioned at the BOTTOM of the outer div.
-        Cards use absolute inset-0 relative to this box.
-        Back cards shift upward with translateY (negative), poking into the
-        peek-room above — that's where they become visible as a stack.
-      */}
       <div
         className="absolute bottom-0 left-0 right-0"
         style={{ height: cardH }}
       >
         {sliced.map((src, i, arr) => {
           const fromFront = arr.length - 1 - i;
-          const shared: CardProps = { src, title, cardIndex: i, fromFront, liveUrl, isDesktop };
+          const shared: CardProps = { src, title, cardIndex: i, fromFront, liveUrl, isDesktop, sectionIndex };
           return type === 'app'
             ? <AppFrame key={i} {...shared} />
             : <WebFrame key={i} {...shared} />;
@@ -307,13 +300,13 @@ function ImageStack({ stackRef, images, title, liveUrl, type, isDesktop }: Image
 function buildCycler(
   stackEl: HTMLDivElement,
   timerRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
+  rafRef: React.MutableRefObject<number | null>,
   interval: number,
   initialDelay: number,
   imageCount: number,
 ) {
   if (imageCount < 2) return;
 
-  // Cards live inside the single child div (the bottom-anchored inner wrapper)
   const inner = stackEl.firstElementChild as HTMLDivElement | null;
   if (!inner) return;
 
@@ -323,10 +316,8 @@ function buildCycler(
 
     const state = Flip.getState(cards);
 
-    // Move front card (last child) to back (first child)
     inner.insertBefore(cards[cards.length - 1], cards[0]);
 
-    // Re-apply stack transforms to match new order
     const updated = Array.from(inner.children) as HTMLElement[];
     updated.forEach((card, i) => {
       const fromFront = updated.length - 1 - i;
@@ -346,7 +337,7 @@ function buildCycler(
     });
 
     timerRef.current = setTimeout(() => {
-      requestAnimationFrame(cycle);
+      rafRef.current = requestAnimationFrame(cycle);
     }, interval);
   };
 
@@ -359,7 +350,7 @@ function buildCycler(
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
-  ({ project, style }, ref) => {
+  ({ project, style, index }, ref) => {
     const { title, description, images, urls, category, techStack, achievement } = project;
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -373,6 +364,8 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
     const mobileCategoryRef = useRef<HTMLDivElement>(null);
     const loopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mobileLoopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const loopRafRef = useRef<number | null>(null);
+    const mobileLoopRafRef = useRef<number | null>(null);
 
     useGSAP(() => {
       const section = containerRef.current;
@@ -383,39 +376,52 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
       const clearLoops = () => {
         if (loopTimerRef.current) { clearTimeout(loopTimerRef.current); loopTimerRef.current = null; }
         if (mobileLoopTimerRef.current) { clearTimeout(mobileLoopTimerRef.current); mobileLoopTimerRef.current = null; }
+        if (loopRafRef.current) { cancelAnimationFrame(loopRafRef.current); loopRafRef.current = null; }
+        if (mobileLoopRafRef.current) { cancelAnimationFrame(mobileLoopRafRef.current); mobileLoopRafRef.current = null; }
       };
 
-      // Entry
-      const catEls = [categoryRef.current, mobileCategoryRef.current].filter(Boolean);
-      gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 80%', once: true } })
-        .fromTo(catEls, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' })
-        .fromTo(titleRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.2')
-        .fromTo(descRef.current, { opacity: 0, y: 20 }, { opacity: 0.6, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
-        .fromTo(achievementRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-        .fromTo(linksRef.current?.querySelectorAll('a') ?? [],
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.1 },
-          '-=0.2'
-        )
+      const mm = gsap.matchMedia();
 
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const catEls = [categoryRef.current, mobileCategoryRef.current].filter(Boolean);
+        gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 80%', once: true } })
+          .fromTo(catEls, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out' })
+          .fromTo(titleRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.2')
+          .fromTo(descRef.current, { opacity: 0, y: 20 }, { opacity: 0.6, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+          .fromTo(achievementRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+          .fromTo(linksRef.current?.querySelectorAll('a') ?? [],
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.1 },
+            '-=0.2'
+          );
 
-      if (stack) {
-        gsap.fromTo(stack, { opacity: 0, y: 30 }, {
-          opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: section, start: 'top 75%', once: true },
-        });
-        buildCycler(stack, loopTimerRef, 3000, 2200, (images ?? []).length);
-      }
+        if (stack) {
+          gsap.fromTo(stack, { opacity: 0, y: 30 }, {
+            opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+            scrollTrigger: { trigger: section, start: 'top 75%', once: true },
+          });
+          buildCycler(stack, loopTimerRef, loopRafRef, 3000, 2200, (images ?? []).length);
+        }
 
-      if (mobileStack) {
-        gsap.fromTo(mobileStack, { opacity: 0, y: 30 }, {
-          opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
-          scrollTrigger: { trigger: section, start: 'top 78%', once: true },
-        });
-        buildCycler(mobileStack, mobileLoopTimerRef, 4000, 2500, (images ?? []).length);
-      }
+        if (mobileStack) {
+          gsap.fromTo(mobileStack, { opacity: 0, y: 30 }, {
+            opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+            scrollTrigger: { trigger: section, start: 'top 78%', once: true },
+          });
+          buildCycler(mobileStack, mobileLoopTimerRef, mobileLoopRafRef, 4000, 2500, (images ?? []).length);
+        }
+      });
 
-      return () => clearLoops();
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set([categoryRef.current, mobileCategoryRef.current, titleRef.current, descRef.current, achievementRef.current, linksRef.current?.querySelectorAll('a') ?? []], { opacity: 1, y: 0, x: 0 });
+        gsap.set(stack, { opacity: 1, y: 0 });
+        gsap.set(mobileStack, { opacity: 1, y: 0 });
+
+        if (stack) buildCycler(stack, loopTimerRef, loopRafRef, 3000, 2200, (images ?? []).length);
+        if (mobileStack) buildCycler(mobileStack, mobileLoopTimerRef, mobileLoopRafRef, 4000, 2500, (images ?? []).length);
+      });
+
+      return () => { mm.revert(); clearLoops(); };
     }, { scope: containerRef });
 
     return (
@@ -475,6 +481,7 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
                 liveUrl={urls?.live}
                 type={project.type}
                 isDesktop={false}
+                sectionIndex={index}
               />
             </div>
 
@@ -495,6 +502,7 @@ const ProjectSection = forwardRef<HTMLDivElement, ProjectSectionProps>(
               liveUrl={urls?.live}
               type={project.type}
               isDesktop
+              sectionIndex={index}
             />
           </div>
 

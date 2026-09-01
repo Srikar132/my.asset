@@ -106,7 +106,6 @@ const Projects = () => {
 
         return () => {
             sectionRefs.current.forEach(s => s && gsap.set(s, { willChange: 'auto' }));
-            ScrollTrigger.getAll().forEach(t => t.kill());
         };
     }, { scope: containerRef });
 
@@ -115,10 +114,10 @@ const Projects = () => {
             <div className='w-full flex-1'>
                 <div
                     ref={counterRef}
-                    className="fixed top-8 max-sm:right-8 sm:left-8 z-100 pointer-events-none backdrop-blur-lg"
+                    className="fixed top-8 max-sm:right-8 sm:left-8 z-[100] pointer-events-none"
                     style={{ opacity: 0, transform: 'translateY(-12px)' }}
                 >
-                    <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
+                    <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 backdrop-blur-lg overflow-hidden flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
                         <span className="text-[9px] lg:text-xs tracking-[0.2em] text-white/60" style={{ fontFamily: 'ui-monospace, monospace' }}>
                             Project
                         </span>
@@ -137,7 +136,7 @@ const Projects = () => {
                 {projects.map((project, i) => (
                     <div
                         ref={(el) => { wrapperRefs.current[i] = el; }}
-                        className='sticky top-0 h-screen common-padding flex items-stretch'
+                        className='sticky top-0 h-dvh common-padding flex items-stretch'
                         style={{ zIndex: i + 1 }}
                         key={project.title ?? i}
                     >
