@@ -33,6 +33,7 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(({ className = '' }, ref) =>
   useGSAP(() => {
     const overlay = overlayRef.current;
     const links   = linksRef.current?.children;
+    const nav = typeof ref === 'function' ? null : ref?.current;
     if (!overlay || !links) return;
 
     gsap.set(overlay, { clipPath: 'inset(0 0 100% 0)', display: 'none' });
@@ -46,6 +47,10 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(({ className = '' }, ref) =>
       .to(bar1Ref.current, { rotate: 45,  y:  7, duration: 0.35, ease: 'power3.inOut' }, 0)
       .to(bar2Ref.current, { opacity: 0,  x: -10, duration: 0.2, ease: 'power2.in'   }, 0)
       .to(bar3Ref.current, { rotate: -45, y: -7, duration: 0.35, ease: 'power3.inOut' }, 0);
+
+    if (nav) {
+      gsap.set(nav, { visibility: 'visible' });
+    }
 
     tlRef.current = tl;
   });

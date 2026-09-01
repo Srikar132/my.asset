@@ -1,6 +1,6 @@
 import AboutMe from "@/components/AboutMe";
-import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import FooterTagline from "@/components/FooterTagline";
 import HeroSection from "@/components/HeroSection";
 import MyCapabilities from "@/components/MyCapabilities";
 import Projects from "@/components/Projects";
@@ -13,7 +13,7 @@ export default function Page() {
       <Projects />
       <AboutMe />
       <MyCapabilities />
-      <Contact />
+      <FooterTagline />
       <Footer />
     </main>
   );
