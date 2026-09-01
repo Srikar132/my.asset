@@ -3,7 +3,6 @@ import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import Link from 'next/link';
 import ProjectSection from './ProjectSection';
-import { Button } from '@/components/ui/button';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import projects from '@/data/projects';
@@ -120,7 +119,7 @@ const Projects = () => {
                     style={{ opacity: 0, transform: 'translateY(-12px)' }}
                 >
                     <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-white/5 flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-black/20">
-                        <span className="text-[9px] lg:text-xs uppercase tracking-[0.2em] text-white/60" style={{ fontFamily: 'ui-monospace, monospace' }}>
+                        <span className="text-[9px] lg:text-xs tracking-[0.2em] text-white/60" style={{ fontFamily: 'ui-monospace, monospace' }}>
                             Project
                         </span>
                         <div className="text-white flex items-center gap-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
@@ -154,13 +153,14 @@ const Projects = () => {
             </div>
 
             <div className="flex justify-center px-5 pb-16 pt-4 sm:pb-20">
-                <Button asChild variant="outline" size="default" className="group h-11 rounded-full border-white/10 px-6">
-                    <Link href="/works">
-                        See all works
-                        <span className="font-mono text-[9px] text-foreground/35">({String(projects.length).padStart(2, '0')}+)</span>
-                        <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                    </Link>
-                </Button>
+                <Link
+                    href="/works"
+                    className="group inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-6 text-sm font-medium transition-colors hover:border-white/20 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+                >
+                    <span>See all works</span>
+                    <span className="font-mono text-[9px] text-foreground/35">({String(projects.length).padStart(2, '0')}+)</span>
+                    <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+                </Link>
             </div>
         </section>
     );
