@@ -1,5 +1,4 @@
 import AboutMe from "@/components/AboutMe";
-import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import MyCapabilities from "@/components/MyCapabilities";
@@ -13,7 +12,6 @@ export default function Page() {
       <Projects />
       <AboutMe />
       <MyCapabilities />
-      <Contact />
       <Footer />
     </main>
   );

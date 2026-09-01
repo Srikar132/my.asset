@@ -1,34 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import type { WorkProject } from "@/lib/works";
 
 type WorksExplorerProps = { works: WorkProject[] };
 
 function WorkFolderItem({ work, index }: { work: WorkProject; index: number }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <div
-        className="group relative flex min-w-0 flex-col items-start"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) {
-            setOpen(false);
-          }
-        }}
-      >
-        <PopoverTrigger asChild>
+    <HoverCard>
+      <div className="group relative flex min-w-0 flex-col items-start">
+        <HoverCardTrigger asChild>
           <Link
             href={`/works/${work.slug}`}
             className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/70 focus-visible:ring-offset-8 focus-visible:ring-offset-background"
@@ -41,7 +28,7 @@ function WorkFolderItem({ work, index }: { work: WorkProject; index: number }) {
               <div className="absolute inset-x-3 top-5 h-px bg-white/35" />
             </div>
           </Link>
-        </PopoverTrigger>
+        </HoverCardTrigger>
 
         <div className="mt-4 flex w-full items-center gap-2">
           <Link
@@ -56,11 +43,10 @@ function WorkFolderItem({ work, index }: { work: WorkProject; index: number }) {
           {String(index + 1).padStart(2, "0")}
         </span>
 
-        <PopoverContent
+        <HoverCardContent
           side="right"
           align="start"
-          className="pointer-events-none"
-          onOpenAutoFocus={(event) => event.preventDefault()}
+          avoidCollisions
         >
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
@@ -101,9 +87,9 @@ function WorkFolderItem({ work, index }: { work: WorkProject; index: number }) {
               </span>
             ) : null}
           </div>
-        </PopoverContent>
+        </HoverCardContent>
       </div>
-    </Popover>
+    </HoverCard>
   );
 }
 
@@ -142,7 +128,7 @@ export default function WorksExplorer({ works }: WorksExplorerProps) {
             Have an idea worth building? I&rsquo;d love to hear about it and see what we can make together.
           </p>
           <Link
-            href="/?contact"
+            href="/contact"
             className="mt-8 inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.2em] text-white uppercase transition-colors hover:text-white/60"
           >
             Contact me <ArrowUpRight className="size-3.5" />
