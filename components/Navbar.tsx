@@ -12,9 +12,9 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-  { label: 'About',   href: '#about'   },
-  { label: 'Work',    href: '#work'    },
-  { label: 'Skills',  href: '#skills'  },
+  { label: 'About', href: '#about' },
+  { label: 'Work', href: '#work' },
+  { label: 'Skills', href: '#skills' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -23,29 +23,29 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(({ className = '' }, ref) =>
   const lenis = useLenis();
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const linksRef   = useRef<HTMLDivElement>(null);
-  const bar1Ref    = useRef<HTMLSpanElement>(null);
-  const bar2Ref    = useRef<HTMLSpanElement>(null);
-  const bar3Ref    = useRef<HTMLSpanElement>(null);
-  const tlRef      = useRef<gsap.core.Timeline | null>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
+  const bar1Ref = useRef<HTMLSpanElement>(null);
+  const bar2Ref = useRef<HTMLSpanElement>(null);
+  const bar3Ref = useRef<HTMLSpanElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
   const transitionRef = useRef<NavTransitionOverlayHandle>(null);
 
   useGSAP(() => {
     const overlay = overlayRef.current;
-    const links   = linksRef.current?.children;
+    const links = linksRef.current?.children;
     const nav = typeof ref === 'function' ? null : ref?.current;
     if (!overlay || !links) return;
 
     gsap.set(overlay, { clipPath: 'inset(0 0 100% 0)', display: 'none' });
-    gsap.set(links,   { y: 60, opacity: 0 });
+    gsap.set(links, { y: 60, opacity: 0 });
 
     const tl = gsap.timeline({ paused: true });
 
     tl.set(overlay, { display: 'flex' })
       .to(overlay, { clipPath: 'inset(0 0 0% 0)', duration: 0.55, ease: 'power4.inOut' })
       .to(links, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', stagger: 0.07 }, '-=0.25')
-      .to(bar1Ref.current, { rotate: 45,  y:  7, duration: 0.35, ease: 'power3.inOut' }, 0)
-      .to(bar2Ref.current, { opacity: 0,  x: -10, duration: 0.2, ease: 'power2.in'   }, 0)
+      .to(bar1Ref.current, { rotate: 45, y: 7, duration: 0.35, ease: 'power3.inOut' }, 0)
+      .to(bar2Ref.current, { opacity: 0, x: -10, duration: 0.2, ease: 'power2.in' }, 0)
       .to(bar3Ref.current, { rotate: -45, y: -7, duration: 0.35, ease: 'power3.inOut' }, 0);
 
     if (nav) {

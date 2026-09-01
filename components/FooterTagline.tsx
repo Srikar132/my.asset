@@ -37,7 +37,7 @@ export default function FooterTagline() {
   );
 
   return (
-    <div ref={ref} className="px-4 sm:px-8 lg:px-12 lg:pt-28">
+    <div id='contact' ref={ref} className="px-4 sm:px-8 lg:px-12 lg:pt-28">
       <h2
         ref={taglineRef}
         className="max-w-[820px] text-[clamp(1.6rem,3.4vw,2.35rem)] leading-[1.3] text-white normal-case font-normal"
